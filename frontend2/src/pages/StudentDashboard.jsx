@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   Search,
   ShoppingCart,
@@ -48,6 +48,7 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
             ⭐ Featured
           </span>
         )}
+        {/* Heart Icon - Bottom Right of Image */}
         <button className="absolute bottom-2 right-2 border border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 p-1.5 rounded-full transition-all duration-200">
           <Heart className="w-3 h-3" />
         </button>
@@ -62,6 +63,7 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
 
       {/* Content Section - Right 2/3 */}
       <div className="flex-1 p-3 flex flex-col justify-between">
+        {/* Top Section - Title and Rating */}
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-base font-bold text-white line-clamp-1">
             {restaurant.name}
@@ -73,6 +75,8 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
             </span>
           </div>
         </div>
+
+        {/* Middle Section - Info Icons */}
         <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
@@ -83,6 +87,8 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
             <span>{restaurant.distance || "0.5 km"}</span>
           </div>
         </div>
+
+        {/* Bottom Section - Order Button */}
         <button
           onClick={() => onViewMenu(restaurant._id)}
           disabled={!restaurant.isOpen}
@@ -168,14 +174,21 @@ const GroupOrderModal = ({
   onCreateOrder,
   isCreating,
   orderDetails,
-  token,
   navigate,
 }) => {
   const [selectedCanteen, setSelectedCanteen] = useState("");
+  const rawToken = localStorage.getItem('token');
+  // Remove quotes and whitespace from token
+  const token = rawToken ? rawToken.replace(/^"|"$/g, '').trim() : null;
 
   const handleCreateOrder = () => {
     if (!selectedCanteen) {
       toast.error("Please select a canteen.");
+      return;
+    }
+    if (!token) {
+      toast.error("Authentication error: No token found. Please log in.");
+      navigate('/login'); // Redirect to login page
       return;
     }
     onCreateOrder(selectedCanteen, token);
@@ -286,12 +299,7 @@ const GroupOrderModal = ({
                   Copy Link
                 </button>
                 <button
-                  onClick={() =>
-                  {
-                    console.log(orderDetails.groupLink);
-                    navigate(`/group-order?link=${orderDetails.groupLink}`)
-                  }
-                  }
+                  onClick={() => navigate(`/group-order?link=${orderDetails.groupLink}`)}
                   className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-lg"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -307,7 +315,7 @@ const GroupOrderModal = ({
 };
 
 export default function StudentDashboard() {
-  const { Profile, token } = useSelector((state) => state.Auth); // Get token from Redux
+  const { Profile } = useSelector((state) => state.Profile);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [restaurants, setRestaurants] = useState([]);
@@ -324,6 +332,7 @@ export default function StudentDashboard() {
     0
   );
 
+  // Simulate API call to fetch restaurants
   useEffect(() => {
     const fetchRestaurants = async () => {
       setLoading(true);
@@ -345,6 +354,7 @@ export default function StudentDashboard() {
     fetchRestaurants();
   }, [Profile?.campus?._id]);
 
+  // Optimized filtering with useMemo
   const filteredRestaurants = useMemo(() => {
     return restaurants.filter((restaurant) => {
       const searchLower = searchQuery.toLowerCase();
@@ -376,6 +386,7 @@ export default function StudentDashboard() {
     });
   }, [restaurants, searchQuery, selectedCategory]);
 
+  // Optimized handlers with useCallback
   const handleSearchChange = useCallback((e) => {
     setSearchQuery(e.target.value);
   }, []);
@@ -392,18 +403,22 @@ export default function StudentDashboard() {
     navigate(`/canteen/${restaurantId}`);
   };
 
-  const handleCreateGroupOrder = async (selectedCanteen, token) => {
+  const handleCreateGroupOrder = useCallback(async (selectedCanteen, token) => {
     setIsCreatingOrder(true);
     try {
       console.log("Sending create group order request:", {
-        url: "https://campusbites-mxpe.onrender.com/api/v1/groupOrder/create-order",
+        url: "http://localhost:8080/api/v1/groupOrder/create-order",
         method: "POST",
         bodyData: { canteen: selectedCanteen },
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       });
 
+      if (!token) {
+        throw new Error("Authentication error: No token found. Please log in.");
+      }
+
       const res = await fetch(
-        "https://campusbites-mxpe.onrender.com/api/v1/groupOrder/create-order",
+        "http://localhost:8080/api/v1/groupOrder/create-order",
         {
           method: "POST",
           headers: {
@@ -432,7 +447,7 @@ export default function StudentDashboard() {
     } finally {
       setIsCreatingOrder(false);
     }
-  };
+  }, []);
 
   const resetGroupOrderFlow = useCallback(() => {
     setGroupOrderDetails(null);
@@ -478,6 +493,7 @@ export default function StudentDashboard() {
       `}</style>
       <div className="relative p-8 pt-19 w-full">
         <div className="max-w-7xl mx-auto">
+          {/* Header */}
           <div className="mb-12">
             <div className="flex items-center justify-between mb-8">
               <div>
@@ -497,6 +513,7 @@ export default function StudentDashboard() {
               </button>
             </div>
 
+            {/* Search Bar */}
             <div className="relative max-w-2xl mx-auto mb-8">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
               <input
@@ -519,6 +536,7 @@ export default function StudentDashboard() {
               </button>
             </div>
 
+            {/* Categories */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               {categories.map((category) => (
                 <button
@@ -537,6 +555,7 @@ export default function StudentDashboard() {
             </div>
           </div>
 
+          {/* Group Order Banner */}
           <div className="mb-12">
             <div className="border border-red-500 bg-red-600 shadow-xl text-white rounded-xl overflow-hidden">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 gap-4">
@@ -561,6 +580,7 @@ export default function StudentDashboard() {
             </div>
           </div>
 
+          {/* Restaurants Grid */}
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">
@@ -601,6 +621,7 @@ export default function StudentDashboard() {
         </div>
       </div>
 
+      {/* Group Order Modal */}
       <GroupOrderModal
         isOpen={isGroupOrderModalOpen}
         onClose={resetGroupOrderFlow}
@@ -608,7 +629,6 @@ export default function StudentDashboard() {
         onCreateOrder={handleCreateGroupOrder}
         isCreating={isCreatingOrder}
         orderDetails={groupOrderDetails}
-        token={token}
         navigate={navigate}
       />
     </div>

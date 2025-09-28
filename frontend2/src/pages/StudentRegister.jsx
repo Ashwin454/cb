@@ -521,7 +521,7 @@ const RegisterPage = () => {
         </div>
 
         {/* Right Side - Benefits Panel */}
-        <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative">
+        {/* <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative">
           <div className="text-center">
             <div className="mb-8 p-6 bg-gradient-to-r from-red-500/5 dark:from-red-500/10 to-rose-500/5 dark:to-rose-500/10 border border-red-500/10 dark:border-red-500/20 rounded-2xl backdrop-blur-sm">
               <div className="text-4xl mb-4">🎉</div>
@@ -580,7 +580,7 @@ const RegisterPage = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Request Campus Modal */}

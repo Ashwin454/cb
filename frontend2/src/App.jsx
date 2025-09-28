@@ -122,6 +122,12 @@ function App() {
             }
           />
           <Route
+            path="/group-order"
+            element={
+                <GroupOrderPage />
+            }
+          />
+          <Route
             path="/student/orders"
             element={
               <PrivateRoute allowedRoles={[Roles.Student]}>
@@ -138,12 +144,7 @@ function App() {
             }
           />
           <Route path="/profile" element={<ProfileWithErrorBoundary />} />
-          <Route
-            path="/group-order"
-            element={
-                <GroupOrderPage />
-            }
-          />
+
           {/* Vendor routes */}
           <Route
             path="/dashboard/*"

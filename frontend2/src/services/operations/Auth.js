@@ -74,7 +74,6 @@ export const registerVendor=(data,navigate)=>{
         throw new Error(response.data.message);
       }
 
-    
       toast.success("Canteen Created SuccessFully,Please Wait For approval");
       navigate("/login");
       
