@@ -218,7 +218,7 @@ export default function GroupOrderPage() {
       };
       console.log(updatePayload);
       const res = await fetch(
-        `http://localhost:8080/api/v1/groupOrder/items`,
+        `https://campusbites-mxpe.onrender.com/api/v1/groupOrder/items`,
         {
           method: "POST",
           headers: {
@@ -400,7 +400,7 @@ export default function GroupOrderPage() {
         canteen: groupOrder.canteen,
       };
       const res = await fetch(
-        `http://localhost:8080/api/v1/groupOrder/add-items-payment`,
+        `https://campusbites-mxpe.onrender.com/api/v1/groupOrder/add-items-payment`,
         {
           method: "POST",
           headers: {
