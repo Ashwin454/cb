@@ -56,6 +56,7 @@ import AboutPage from "./pages/AboutUs";
 import FAQPage from "./pages/FAQ";
 import TermsConditionsPage from "./pages/TermsAndCondition";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
+import GroupOrderPage from "./pages/GroupOrder";
 
 function App() {
   const { token, User } = useSelector((state) => state.Auth);
@@ -137,7 +138,12 @@ function App() {
             }
           />
           <Route path="/profile" element={<ProfileWithErrorBoundary />} />
-
+          <Route
+            path="/group-order"
+            element={
+                <GroupOrderPage />
+            }
+          />
           {/* Vendor routes */}
           <Route
             path="/dashboard/*"

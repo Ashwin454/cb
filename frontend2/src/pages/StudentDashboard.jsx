@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Search,
   ShoppingCart,
@@ -16,6 +16,7 @@ import {
 import { GetAllCanteens } from "../services/operations/Canteens";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const categories = [
   { id: "all", name: "All", icon: "🍽️" },
@@ -47,7 +48,6 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
             ⭐ Featured
           </span>
         )}
-        {/* Heart Icon - Bottom Right of Image */}
         <button className="absolute bottom-2 right-2 border border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 p-1.5 rounded-full transition-all duration-200">
           <Heart className="w-3 h-3" />
         </button>
@@ -62,7 +62,6 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
 
       {/* Content Section - Right 2/3 */}
       <div className="flex-1 p-3 flex flex-col justify-between">
-        {/* Top Section - Title and Rating */}
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-base font-bold text-white line-clamp-1">
             {restaurant.name}
@@ -74,8 +73,6 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
             </span>
           </div>
         </div>
-
-        {/* Middle Section - Info Icons */}
         <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
@@ -86,8 +83,6 @@ const RestaurantCard = ({ restaurant, onViewMenu }) => (
             <span>{restaurant.distance || "0.5 km"}</span>
           </div>
         </div>
-
-        {/* Bottom Section - Order Button */}
         <button
           onClick={() => onViewMenu(restaurant._id)}
           disabled={!restaurant.isOpen}
@@ -173,24 +168,28 @@ const GroupOrderModal = ({
   onCreateOrder,
   isCreating,
   orderDetails,
+  token,
+  navigate,
 }) => {
   const [selectedCanteen, setSelectedCanteen] = useState("");
 
   const handleCreateOrder = () => {
-    if (!selectedCanteen) return;
-    onCreateOrder(selectedCanteen);
+    if (!selectedCanteen) {
+      toast.error("Please select a canteen.");
+      return;
+    }
+    onCreateOrder(selectedCanteen, token);
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    // In a real app, you'd show a toast notification here
-    alert("Link copied to clipboard!");
+    toast.success("Link copied to clipboard!");
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0  bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800 rounded-lg max-w-md w-full p-6 border border-gray-700">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent pb-2">
@@ -252,6 +251,19 @@ const GroupOrderModal = ({
               Group Order Created! 🎉
             </h3>
 
+            {orderDetails.qrCodeUrl && (
+              <div className="mt-4 flex flex-col items-center">
+                <div className="p-4 bg-gray-700 rounded-lg shadow-lg">
+                  <img
+                    src={orderDetails.qrCodeUrl}
+                    alt="Group Order QR Code"
+                    className="w-48 h-48 rounded"
+                  />
+                </div>
+                <p className="text-sm text-gray-400 mt-3">Scan QR code to join</p>
+              </div>
+            )}
+
             <div className="bg-gray-700 p-4 rounded-lg">
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 Group Link:
@@ -263,15 +275,27 @@ const GroupOrderModal = ({
               </div>
               <div className="flex gap-3 justify-center">
                 <button
-                  onClick={() => copyToClipboard(orderDetails.groupLink)}
+                  onClick={() =>
+                    copyToClipboard(
+                      `https://campus-bites-c7pe.vercel.app/group-order?link=${orderDetails.groupLink}`
+                    )
+                  }
                   className="flex items-center gap-2 px-3 py-2 border border-gray-600 rounded-lg text-gray-300 hover:bg-gray-600 transition-colors"
                 >
                   <Copy className="w-4 h-4" />
                   Copy Link
                 </button>
-                <button className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-lg">
+                <button
+                  onClick={() =>
+                  {
+                    console.log(orderDetails.groupLink);
+                    navigate(`/group-order?link=${orderDetails.groupLink}`)
+                  }
+                  }
+                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-lg"
+                >
                   <ExternalLink className="w-4 h-4" />
-                  Go to Order
+                  Go to Group Order
                 </button>
               </div>
             </div>
@@ -283,7 +307,7 @@ const GroupOrderModal = ({
 };
 
 export default function StudentDashboard() {
-  const { Profile } = useSelector((state) => state.Profile);
+  const { Profile, token } = useSelector((state) => state.Auth); // Get token from Redux
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [restaurants, setRestaurants] = useState([]);
@@ -293,8 +317,6 @@ export default function StudentDashboard() {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [groupOrderDetails, setGroupOrderDetails] = useState(null);
   const [cartItems] = useState([]); // Mock cart state
-
-  // Mock cart items count
   const navigate = useNavigate();
 
   const cartItemsCount = cartItems.reduce(
@@ -302,27 +324,27 @@ export default function StudentDashboard() {
     0
   );
 
-  // Simulate API call to fetch restaurants
   useEffect(() => {
     const fetchRestaurants = async () => {
       setLoading(true);
-      const result = await GetAllCanteens(Profile?.campus?._id);
-      const newData = result.map((ele) => {
-        const image = ele?.owner?.profileImage;
-        return {
+      try {
+        const result = await GetAllCanteens(Profile?.campus?._id);
+        const newData = result.map((ele) => ({
           ...ele,
-          image: image,
-        };
-      });
-
-      setRestaurants(newData);
-      setLoading(false);
+          image: ele?.owner?.profileImage,
+        }));
+        setRestaurants(newData);
+      } catch (err) {
+        setError(err.message || "Failed to fetch restaurants");
+        toast.error(err.message || "Failed to fetch restaurants");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchRestaurants();
-  }, []);
+  }, [Profile?.campus?._id]);
 
-  // Optimized filtering with useMemo
   const filteredRestaurants = useMemo(() => {
     return restaurants.filter((restaurant) => {
       const searchLower = searchQuery.toLowerCase();
@@ -337,8 +359,6 @@ export default function StudentDashboard() {
         (restaurant.email &&
           restaurant.email.toLowerCase().includes(searchLower));
 
-      // For category filtering, we'll use a simple approach since cuisine field doesn't exist
-      // We can filter by name patterns or add cuisine data later
       const matchesCategory =
         selectedCategory === "all" ||
         (selectedCategory === "indian" &&
@@ -356,7 +376,6 @@ export default function StudentDashboard() {
     });
   }, [restaurants, searchQuery, selectedCategory]);
 
-  // Optimized handlers with useCallback
   const handleSearchChange = useCallback((e) => {
     setSearchQuery(e.target.value);
   }, []);
@@ -373,27 +392,47 @@ export default function StudentDashboard() {
     navigate(`/canteen/${restaurantId}`);
   };
 
-  const handleCreateGroupOrder = useCallback(async (canteenId) => {
+  const handleCreateGroupOrder = async (selectedCanteen, token) => {
     setIsCreatingOrder(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      console.log("Sending create group order request:", {
+        url: "https://campusbites-mxpe.onrender.com/api/v1/groupOrder/create-order",
+        method: "POST",
+        bodyData: { canteen: selectedCanteen },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
 
-      // Mock response
-      const mockOrderDetails = {
-        groupOrderId: "group_" + Date.now(),
-        groupLink: `https://campus-bites.app/group-order?id=group_${Date.now()}`,
-        qrCodeUrl:
-          "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=group_order",
-      };
+      const res = await fetch(
+        "https://campusbites-mxpe.onrender.com/api/v1/groupOrder/create-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ canteen: selectedCanteen }),
+        }
+      );
 
-      setGroupOrderDetails(mockOrderDetails);
-    } catch (err) {
-      setError("Failed to create group order");
+      const data = await res.json();
+      console.log("Create group order response:", data);
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to create group order");
+      }
+
+      setGroupOrderDetails(data.data);
+      toast.success("Group Order Created!");
+    } catch (error) {
+      console.error("Group order creation error:", {
+        message: error.message,
+        response: error.response?.data,
+      });
+      toast.error(error.message || "Failed to create group order");
     } finally {
       setIsCreatingOrder(false);
     }
-  }, []);
+  };
 
   const resetGroupOrderFlow = useCallback(() => {
     setGroupOrderDetails(null);
@@ -428,7 +467,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="h-full w-full bg-slate-950" >
+    <div className="h-full w-full bg-slate-950">
       <style jsx>{`
         .line-clamp-1 {
           display: -webkit-box;
@@ -439,7 +478,6 @@ export default function StudentDashboard() {
       `}</style>
       <div className="relative p-8 pt-19 w-full">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="mb-12">
             <div className="flex items-center justify-between mb-8">
               <div>
@@ -459,7 +497,6 @@ export default function StudentDashboard() {
               </button>
             </div>
 
-            {/* Search Bar */}
             <div className="relative max-w-2xl mx-auto mb-8">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
               <input
@@ -482,7 +519,6 @@ export default function StudentDashboard() {
               </button>
             </div>
 
-            {/* Categories */}
             <div className="flex flex-wrap justify-center gap-4 mb-8">
               {categories.map((category) => (
                 <button
@@ -501,7 +537,6 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          {/* Group Order Banner */}
           <div className="mb-12">
             <div className="border border-red-500 bg-red-600 shadow-xl text-white rounded-xl overflow-hidden">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 gap-4">
@@ -526,7 +561,6 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          {/* Restaurants Grid */}
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">
@@ -567,7 +601,6 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-      {/* Group Order Modal */}
       <GroupOrderModal
         isOpen={isGroupOrderModalOpen}
         onClose={resetGroupOrderFlow}
@@ -575,6 +608,8 @@ export default function StudentDashboard() {
         onCreateOrder={handleCreateGroupOrder}
         isCreating={isCreatingOrder}
         orderDetails={groupOrderDetails}
+        token={token}
+        navigate={navigate}
       />
     </div>
   );
