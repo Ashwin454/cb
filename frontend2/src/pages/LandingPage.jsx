@@ -12,12 +12,13 @@ import {
 import { Button } from "../component/ui/button";
 import { Input } from "../component/ui/input";
 import { addToCart } from "../slices/CartSlice";
+import { Link } from "react-router-dom";
 
 // Counter removed (no hooks/animation)
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-[#0a192f] dark:via-[#1e3a5f] dark:to-[#0f172a] text-gray-900 dark:text-white overflow-hidden transition-all duration-500 pl-6">
+    <div className="min-h-screen w-full bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-[#0a192f] dark:via-[#1e3a5f] dark:to-[#0f172a] text-gray-900 dark:text-white overflow-hidden transition-all duration-500 pl-2 sm:pl-4 lg:pl-6">
       {/* Hero Section */}
       <section
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -36,7 +37,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className="text-center lg:text-left pl-6">
+            <div className="text-center lg:text-left pl-2 sm:pl-4 lg:pl-6">
               <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-2 mb-6">
                 <Star className="w-5 h-5 text-red-400" />
                 <span className="text-red-400 font-medium">
@@ -65,18 +66,18 @@ export default function LandingPage() {
                   size="lg"
                   className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <a href="/student/dashboard" className="flex items-center">
+                  <Link to="/student/dashboard" className="flex items-center">
                     Order Now <ArrowRight className="w-5 h-5 ml-2" />
-                  </a>
+                  </Link>
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
                   className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-8 py-6 text-lg rounded-full transition-all duration-300 transform hover:scale-105"
                 >
-                  <a href="#demo" className="flex items-center">
+                  <Link to="#demo" className="flex items-center">
                     <span className="mr-2">▶</span>Watch Demo
-                  </a>
+                  </Link>
                 </Button>
               </div>
 

@@ -12,32 +12,54 @@ button {
     -webkit-overflow-scrolling: touch;
     margin: 0;
     padding: 0;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   body {
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  :root {
+  /* Light mode styles */
+  html.light,
+  body.light,
+  .light {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Dark mode styles */
+  html.dark,
+  body.dark,
+  .dark {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Light mode variables (default) */
+  :root,
+  html.light,
+  body.light,
+  .light {
     --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+    --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 224 71.4% 4.1%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
     --radius: 0.5rem;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -46,32 +68,159 @@ button {
     --chart-5: 27 87% 67%;
   }
 
+  /* Dark mode variables */
+  html.dark,
+  body.dark,
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  /* Apply theme colors to body */
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Ensure all elements inherit theme colors */
+  * {
+    transition: background-color 0.3s ease, color 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  /* Additional theme transition improvements */
+  /* .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease,
+      border-color 0.3s ease, box-shadow 0.3s ease;
+  } */
+
+  /* Dark mode specific improvements */
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* Light mode specific improvements */
+  .light {
+    color-scheme: light;
+  }
+
+  /* Force theme application to all elements */
+  html.dark * {
+    color-scheme: dark;
+  }
+
+  html.light * {
+    color-scheme: light;
+  }
+
+  /* Ensure proper theme inheritance */
+  html.dark {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  html.light {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  /* Force dark mode styles when .dark class is applied */
+  .dark {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Force light mode styles when .light class is applied */
+  .light {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Ensure light mode uses theme variables */
+  /* html.light,
+  body.light,
+  html[data-theme="light"],
+  body[data-theme="light"],
+  .light,
+  .theme-transition.light {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  } */
+
+  /* Force light mode to be white */
+  /* html.light,
+  body.light {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  } */
+
+  /* Ensure dark mode uses theme variables */
+  /* html.dark,
+  body.dark,
+  html[data-theme="dark"],
+  body[data-theme="dark"],
+  .dark,
+  .theme-transition.dark {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  } */
+
+  /* Ensure all child elements inherit theme */
+  .dark * {
+    color: inherit;
+  }
+
+  .light * {
+    color: inherit;
+  }
+
+  /* Force theme application to main content areas */
+  /* .theme-transition {
+    background-color: inherit !important;
+    color: inherit !important;
+  } */
+
+  /* .theme-transition.light {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  } */
+
+  /* .theme-transition.dark {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  } */
+
+  /* Override any conflicting background styles */
+  /* .theme-transition.light * {
+    background-color: transparent !important;
+  }
+
+  .theme-transition.dark * {
+    background-color: transparent !important;
+  } */
 }
 
 /* Scrollbar Hide */
@@ -82,6 +231,32 @@ button {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Mobile Menu Blur Effect */
+body.mobile-menu-open {
+  filter: blur(8px);
+  transition: filter 0.3s ease-in-out;
+}
+
+/* Ensure the navbar stays sharp when menu is open */
+body.mobile-menu-open header {
+  filter: none;
+}
+
+/* Mobile navbar backdrop blur */
+.mobile-navbar-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Mobile navbar content styling */
+.mobile-navbar-content {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 @keyframes mulShdSpin {

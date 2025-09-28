@@ -521,19 +521,19 @@ const RegisterPage = () => {
         </div>
 
         {/* Right Side - Benefits Panel */}
-        {/* <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative">
+        <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12 relative">
           <div className="text-center">
             <div className="mb-8 p-6 bg-gradient-to-r from-red-500/5 dark:from-red-500/10 to-rose-500/5 dark:to-rose-500/10 border border-red-500/10 dark:border-red-500/20 rounded-2xl backdrop-blur-sm">
               <div className="text-4xl mb-4">🎉</div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 Welcome Bonus!
               </h2>
-              <p className="text-red-600 dark:text-red-300 font-semibold text-lg">
+              {/* <p className="text-red-600 dark:text-red-300 font-semibold text-lg">
                 Get 20% OFF on your first order
-              </p>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
+              </p> */}
+              {/* <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
                 Plus free delivery for your first month
-              </p>
+              </p> */}
             </div>
 
             <div className="space-y-6">
@@ -580,7 +580,7 @@ const RegisterPage = () => {
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
       </div>
 
       {/* Request Campus Modal */}

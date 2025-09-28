@@ -7,11 +7,82 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState("light");
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    // apply theme to body
-    document.body.className = theme;
-  }, [theme]);
+  // useEffect(() => {
+  //   setMounted(true);
+  //   // Get theme from localStorage or default to light
+  //   const savedTheme = localStorage.getItem("theme") || "light";
+  //   setTheme(savedTheme);
+
+  //   // Remove any existing theme classes
+  //   document.body.classList.remove("light", "dark");
+  //   document.documentElement.classList.remove("light", "dark");
+
+  //   // Apply theme to body and html
+  //   document.body.classList.add(savedTheme);
+  //   document.documentElement.classList.add(savedTheme);
+
+  //   // Also set data attribute for additional CSS targeting
+  //   document.body.setAttribute("data-theme", savedTheme);
+  //   document.documentElement.setAttribute("data-theme", savedTheme);
+
+  //   // Also apply to the root div if it exists
+  //   const rootDiv = document.getElementById("root");
+  //   if (rootDiv) {
+  //     rootDiv.classList.remove("light", "dark");
+  //     rootDiv.classList.add(savedTheme);
+  //     rootDiv.setAttribute("data-theme", savedTheme);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (mounted) {
+  //     // Save theme to localStorage
+  //     localStorage.setItem("theme", theme);
+
+  //     // Remove any existing theme classes
+  //     document.body.classList.remove("light", "dark");
+  //     document.documentElement.classList.remove("light", "dark");
+
+  //     // Apply new theme class
+  //     document.body.classList.add(theme);
+  //     document.documentElement.classList.add(theme);
+
+  //     // Also set data attribute for additional CSS targeting
+  //     document.body.setAttribute("data-theme", theme);
+  //     document.documentElement.setAttribute("data-theme", theme);
+
+  //     // Also apply to the root div if it exists
+  //     const rootDiv = document.getElementById("root");
+  //     if (rootDiv) {
+  //       rootDiv.classList.remove("light", "dark");
+  //       rootDiv.classList.add(theme);
+  //       rootDiv.setAttribute("data-theme", theme);
+  //     }
+
+  //     // Force a re-render by updating the document title
+  //     document.title = `Campus Bites - ${
+  //       theme === "dark" ? "Dark" : "Light"
+  //     } Mode`;
+
+  //     // Force a style recalculation
+  //     document.body.style.display = "none";
+  //     document.body.offsetHeight; // Trigger reflow
+  //     document.body.style.display = "";
+
+  //     // Debug log
+  //     console.log("Theme changed to:", theme);
+  //     console.log("Body class:", document.body.className);
+  //     console.log("HTML class:", document.documentElement.className);
+  //     console.log(
+  //       "Body background:",
+  //       window.getComputedStyle(document.body).backgroundColor
+  //     );
+  //     console.log(
+  //       "HTML background:",
+  //       window.getComputedStyle(document.documentElement).backgroundColor
+  //     );
+  //   }
+  // }, [theme, mounted]);
 
   if (!mounted) return null;
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { memo, useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOutUser } from "../../services/operations/Auth";
 import {
   Menu,
@@ -147,7 +147,7 @@ const Sheet = ({ open, onOpenChange, children }) => {
       {open && (
         <div className="fixed inset-0 z-50">
           <div
-            className="fixed inset-0 bg-black/50"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => onOpenChange(false)}
           />
           {contentChild}
@@ -178,7 +178,7 @@ const SheetContent = ({ side = "right", className = "", children }) => (
 );
 
 const Logo = ({ href = "/" }) => (
-  <a href={href} className="flex items-center min-w-0 group">
+  <Link to={href}>
     <div className="flex items-center space-x-3">
       <img
         src="/logo.png"
@@ -196,7 +196,7 @@ const Logo = ({ href = "/" }) => (
         </span>
       </div>
     </div>
-  </a>
+  </Link>
 );
 
 const ProfileAvatar = ({ src, name, onClick }) => (
@@ -290,7 +290,7 @@ function Navbar() {
 
   if (hideNavbar) {
     return (
-      <header className="fixed top-0 z-50 w-full bg-white/80 dark:bg-gradient-to-r dark:from-[#0a192f] dark:to-[#1e3a5f] backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-white/10 transition-all duration-500">
+      <header className="fixed top-0 z-50 w-full bg-[#0a192f] shadow-lg border-b border-gray-200/50 dark:border-white/10 transition-all duration-500">
         <div className="w-full px-4">
           <div className="flex h-20 items-center justify-between">
             <Logo
@@ -417,7 +417,7 @@ function Navbar() {
   }
 
   return (
-    <header className="fixed top-0 z-50 w-full bg-white/80 dark:bg-gradient-to-r dark:from-[#0a192f] dark:to-[#1e3a5f] backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-white/10 transition-all duration-500">
+    <header className="fixed top-0 z-50 w-full bg-[#0a192f] shadow-lg border-b border-gray-200/50 dark:border-white/10 transition-all duration-500">
       <div className="w-full px-4">
         <div className="flex h-20 items-center justify-between">
           <Logo />
@@ -469,6 +469,11 @@ function Navbar() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle - only show on desktop */}
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
+
             {/* Cart - only show for students */}
             {isAuthenticated && displayUser?.role === "student" && (
               <button
@@ -598,49 +603,116 @@ function Navbar() {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="w-full max-w-xs bg-gradient-to-b from-[#0a192f] to-[#1e3a5f] border-l border-white/10 text-white p-0"
+                className="w-full max-w-sm bg-[#0a192f] border-l border-slate-700 text-white p-0"
               >
                 <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-center p-4 border-b border-white/10">
-                    <div className="w-10"></div>
-                    <div className="flex items-center space-x-2">
-                      <ThemeToggle />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="text-white hover:bg-white/10 rounded-full"
-                      >
-                        <X className="h-6 w-6" />
-                      </Button>
+                  {/* Mobile Menu Header with Logo */}
+                  <div className="flex items-center justify-between px-4 py-4 border-b border-slate-700 bg-[#0a192f]">
+                    <div className="flex items-center space-x-3">
+                      {/* Red Square Logo with CB */}
+                      <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">CB</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-lg font-bold text-white">
+                          Campus Bites
+                        </span>
+                        <span className="text-xs text-slate-300 font-light tracking-wider">
+                          Fast • Fresh • Delicious
+                        </span>
+                      </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="rounded-full text-white hover:bg-slate-800"
+                    >
+                      <X className="h-6 w-6" />
+                    </Button>
                   </div>
 
+                  {/* Mobile Search Bar for Authenticated Users */}
+                  {isAuthenticated && (
+                    <div className="my-4 px-4">
+                      <GlobalSearchDropdown
+                        query={searchQuery}
+                        setQuery={setSearchQuery}
+                        open={searchDropdownOpen}
+                        setOpen={setSearchDropdownOpen}
+                        navigate={navigate}
+                      />
+                    </div>
+                  )}
+
                   {/* Navigation items */}
-                  <nav className="px-6 py-6 space-y-3 bg-[#0a1a32] rounded-lg mx-4 my-2">
-                    {navItems.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <button
-                          key={item.href}
-                          onClick={() => {
-                            handleNavigation(item.href);
-                            setIsMenuOpen(false);
-                          }}
-                          className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg text-lg font-medium transition-colors border ${
-                            pathname === item.href
-                              ? "bg-red-600 text-white border-red-700"
-                              : "bg-[#0a192f] hover:bg-[#1e3a5f] text-white/90 border-white/10 hover:border-white/20"
-                          }`}
-                        >
-                          <Icon className="h-6 w-6" />
-                          <span>{item.name}</span>
-                        </button>
-                      );
-                    })}
+                  <nav className="flex-1 p-6 space-y-2">
+                    {isAuthenticated &&
+                      navItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <button
+                            key={item.href}
+                            onClick={() => {
+                              handleNavigation(item.href);
+                              setIsMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg transition-all duration-300 text-base font-medium ${
+                              pathname === item.href
+                                ? "bg-red-600 text-white"
+                                : "text-white hover:bg-slate-800"
+                            }`}
+                          >
+                            <Icon className="h-6 w-6" />
+                            <span>{item.name}</span>
+                          </button>
+                        );
+                      })}
+
+                    {/* Show welcome message for unauthenticated users */}
+                    {!isAuthenticated && (
+                      <div className="text-center py-16">
+                        <p className="text-slate-200 text-2xl mb-4 font-light">
+                          Welcome to Campus Bites
+                        </p>
+                        <p className="text-slate-400 text-sm">
+                          Please login to access all features
+                        </p>
+                      </div>
+                    )}
                   </nav>
 
-                  <div className="p-4"></div>
+                  {/* Login/Signup buttons for unauthenticated users */}
+                  {!isAuthenticated && (
+                    <div className="p-6 space-y-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          handleNavigation("/login");
+                          setIsMenuOpen(false);
+                        }}
+                        className="w-full bg-black text-white border-black font-bold rounded-xl py-4 shadow-md transition-all duration-300 hover:scale-105 hover:bg-gray-800"
+                      >
+                        Login
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleNavigation("/register");
+                          setIsMenuOpen(false);
+                        }}
+                        className="w-full h-12 bg-red-600 hover:bg-red-700 rounded-xl text-lg font-bold"
+                      >
+                        Sign Up
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Theme Toggle at bottom */}
+                  <div className="mt-auto p-6 flex justify-center">
+                    {/* <div className="w-12 h-12 rounded-full bg-yellow-400 border-2 border-yellow-400 flex items-center justify-center shadow-lg">
+                      <ThemeToggle />
+                    </div> */}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

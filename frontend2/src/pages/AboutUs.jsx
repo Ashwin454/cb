@@ -7,6 +7,7 @@ import {
   Smartphone,
   Quote,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function AboutPage() {
   return (
@@ -228,11 +229,11 @@ export default function AboutPage() {
             <p className="text-gray-400 text-lg mb-12 max-w-xl mx-auto">
               Join thousands of students revolutionizing campus dining
             </p>
-            <a href="/">
+            <Link to="/">
               <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-semibold shadow-lg text-lg">
                 Get Campus Bites
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

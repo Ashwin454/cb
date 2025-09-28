@@ -16,7 +16,7 @@ import {
 } from "../services/operations/Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { Roles } from "../constants/constant";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // UI components (as in your code, unchanged)
 const Card = ({ children, className = "" }) => (
@@ -861,9 +861,9 @@ export default function VendorOnboardingForm() {
         <div className="text-center mt-8 text-sm text-gray-500">
           <p>
             Already have an account?{" "}
-            <a href="/login" className="text-orange-600 hover:underline">
+            <Link to="/login" className="text-orange-600 hover:underline">
               Sign In
-            </a>
+            </Link>
           </p>
         </div>
       </form>

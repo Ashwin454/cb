@@ -73,7 +73,7 @@ function App() {
   }, [token, Profile]);
 
   return (
-    <div className="flex flex-col  min-h-screen  ">
+    <div className="flex flex-col min-h-screen theme-transition">
       {User?.role === Roles.Admin ? <AdminNavbar /> : <Navbar />}
 
       <main className="flex justify-center  mt-17 ">
@@ -121,12 +121,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/group-order"
-            element={
-                <GroupOrderPage />
-            }
-          />
+          <Route path="/group-order" element={<GroupOrderPage />} />
           <Route
             path="/student/orders"
             element={

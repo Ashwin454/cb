@@ -7,6 +7,7 @@ import {
   ChatBubbleLeftRightIcon,
   PlusCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 const faqData = [
   {
@@ -348,14 +349,14 @@ class FAQPage extends React.Component {
                   FAQ.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                  <a href="mailto:support@campusbites.in">
+                  <Link to="mailto:support@campusbites.in">
                     <button className="group bg-gray text-gray px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-semibold  transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg">
                       <ChatBubbleLeftRightIcon className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
                       <span className="text-sm sm:text-base">
                         Contact Support
                       </span>
                     </button>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

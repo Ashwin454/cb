@@ -1,5 +1,6 @@
 import { Instagram, Linkedin } from "lucide-react";
 import { memo, useState } from "react";
+import { Link } from "react-router-dom";
 import { RefundPolicyModal } from "./RefundPolicyModal";
 
 function Footer() {
@@ -42,30 +43,30 @@ function Footer() {
             <h3 className="font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/" className="text-gray-400 hover:text-white">
+                <Link to="/" className="text-gray-400 hover:text-white">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/student/quickbite"
+                <Link
+                  to="/student/quickbite"
                   className="text-gray-400 hover:text-white"
                 >
                   QuickBites
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/student/orders"
+                <Link
+                  to="/student/orders"
                   className="text-gray-400 hover:text-white"
                 >
                   Orders
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/cart" className="text-gray-400 hover:text-white">
+                <Link to="/cart" className="text-gray-400 hover:text-white">
                   Cart
-                </a>
+                </Link>
               </li>
             </ul>
           </section>
@@ -75,24 +76,24 @@ function Footer() {
             <h3 className="font-bold mb-4">Information</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/about" className="text-gray-400 hover:text-white">
+                <Link to="/about" className="text-gray-400 hover:text-white">
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/faq" className="text-gray-400 hover:text-white">
+                <Link to="/faq" className="text-gray-400 hover:text-white">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-gray-400 hover:text-white">
+                <Link to="/terms" className="text-gray-400 hover:text-white">
                   Terms & Conditions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy" className="text-gray-400 hover:text-white">
+                <Link to="/privacy" className="text-gray-400 hover:text-white">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
                 <button
