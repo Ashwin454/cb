@@ -160,10 +160,13 @@ const MenuItemForm = ({ item = null, setMenuItems }) => {
     formData.append('canteenId', canteenId);
 
     const result = await CreateMenuItem(formData, token);
-    setMenuItems((prev) => {
+    if(result){
+      setMenuItems((prev) => {
 
       return [...prev, result];
     });
+    }
+    
   };
 
   const onSubmitForm = async () => {

@@ -110,8 +110,10 @@ const Checkbox = ({ checked = false, onCheckedChange, className = "", id }) => (
 const Dialog = ({ open, children }) => {
   if (!open) return null;
   return (
-    <div className=" w-full fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg max-w-md w-full mx-4">{children}</div>
+    <div className="w-full fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+        {children}
+      </div>
     </div>
   );
 };
@@ -284,7 +286,7 @@ export default function VendorOnboardingForm() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center py-20 px-24 md:px-8 text-gray-700">
+    <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center py-4 sm:py-8 md:py-12 lg:py-20 px-4 sm:px-6 md:px-8 lg:px-24 text-gray-700">
       {/* Success Dialog */}
       <Dialog open={successDialog}>
         <DialogContent>
@@ -425,14 +427,14 @@ export default function VendorOnboardingForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-4xl mx-auto flex flex-col gap-8"
+        className="w-full max-w-4xl mx-auto flex flex-col gap-4 sm:gap-6 md:gap-8"
       >
         {/* Header */}
         <div className="text-center mb-2">
-          <h2 className="text-3xl font-extrabold text-orange-700 mb-1">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-orange-700 mb-1">
             Vendor Onboarding
           </h2>
-          <p className="text-md text-gray-700">
+          <p className="text-sm sm:text-md text-gray-700 px-4">
             Welcome! Please fill out the form below to join our network of
             campus food vendors.
           </p>
@@ -449,7 +451,7 @@ export default function VendorOnboardingForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 pt-0 text-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="name">Vendor Name / Canteen Name *</Label>
                 <Input
@@ -474,7 +476,7 @@ export default function VendorOnboardingForm() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="mobile">Mobile Number *</Label>
                 <Input
@@ -517,7 +519,7 @@ export default function VendorOnboardingForm() {
             </div>
 
             {/* Password and Confirm Password Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="relative">
                 <Label htmlFor="password">Password *</Label>
                 <Input
@@ -614,7 +616,7 @@ export default function VendorOnboardingForm() {
             <CardDescription>Set your operating hours and days</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 pt-0 text-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="openingHours">Opening Hours *</Label>
                 <Select
@@ -649,7 +651,7 @@ export default function VendorOnboardingForm() {
 
             <div>
               <Label>Operating Days *</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-2">
                 {DAYS_OF_WEEK.map((day) => (
                   <div key={day} className="flex items-center space-x-2">
                     <Checkbox
@@ -703,14 +705,14 @@ export default function VendorOnboardingForm() {
                 WebP. Max size: 5MB each.
               </p>
               {/* Preview */}
-              <div className="flex gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-2">
                 {images.length > 0 &&
                   images.map((img, idx) => (
                     <img
                       key={idx}
                       src={URL.createObjectURL(img)}
                       alt={`canteen-img-${idx}`}
-                      className="w-16 h-16 object-cover rounded border"
+                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded border"
                     />
                   ))}
               </div>
@@ -749,7 +751,7 @@ export default function VendorOnboardingForm() {
                 Enter your 12-digit Aadhar number (without spaces or dashes)
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="panNumber">PAN Number *</Label>
                 <Input
@@ -850,7 +852,7 @@ export default function VendorOnboardingForm() {
         <div className="flex justify-center">
           <Button
             type="submit"
-            className="w-full md:w-auto px-8 py-3 bg-red-600 hover:bg-red-700"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-red-600 hover:bg-red-700 text-sm sm:text-base"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit Application"}
@@ -858,7 +860,7 @@ export default function VendorOnboardingForm() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-sm text-gray-500">
+        <div className="text-center mt-6 sm:mt-8 text-xs sm:text-sm text-gray-500 px-4">
           <p>
             Already have an account?{" "}
             <Link to="/login" className="text-orange-600 hover:underline">

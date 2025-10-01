@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function PrivacyPolicyPage({ onClose }) {
   useEffect(() => {
@@ -128,12 +129,12 @@ export default function PrivacyPolicyPage({ onClose }) {
               </ul>
               <p className="mt-2">
                 Requests can be sent to{" "}
-                <a
-                  href="mailto:support@campusbites.in"
+                <Link
+                  to="mailto:support@campusbites.in"
                   className="text-blue-400 underline hover:text-blue-300"
                 >
                   support@campusbites.in
-                </a>
+                </Link>
               </p>
             </Section>
 
@@ -165,12 +166,12 @@ export default function PrivacyPolicyPage({ onClose }) {
                 CAMPUS BITES
                 <br />
                 Email:{" "}
-                <a
-                  href="mailto:support@campusbites.in"
+                <Link
+                  to="mailto:support@campusbites.in"
                   className="text-blue-400 underline hover:text-blue-300"
                 >
                   support@campusbites.in
-                </a>
+                </Link>
                 <br />
                 Phone: +91 7529052525
               </p>

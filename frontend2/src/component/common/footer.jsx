@@ -1,11 +1,8 @@
 import { Instagram, Linkedin } from "lucide-react";
-import { memo, useState } from "react";
+import { memo } from "react";
 import { Link } from "react-router-dom";
-import { RefundPolicyModal } from "./RefundPolicyModal";
 
 function Footer() {
-  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
-
   return (
     <footer className="bg-black text-white mt-auto">
       <div className="container mx-auto px-4 py-8">
@@ -17,24 +14,24 @@ function Footer() {
               From Canteen to you - minus the Queue
             </p>
             <div className="flex space-x-4">
-              <a
-                href="https://www.linkedin.com/company/campusbites-in/"
+              <Link
+                to="https://www.linkedin.com/company/campusbites-in/"
                 className="text-gray-400 hover:text-white"
-                target="_blank"
+                target="blank"
                 rel="noopener noreferrer"
               >
                 <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
-              </a>
-              <a
-                href="https://www.instagram.com/campusbites_in/"
+              </Link>
+              <Link
+                to="https://www.instagram.com/campusbites_in/"
                 className="text-gray-400 hover:text-white"
-                target="_blank"
+                target="blank"
                 rel="noopener noreferrer"
               >
                 <Instagram className="h-5 w-5" />
                 <span className="sr-only">Instagram</span>
-              </a>
+              </Link>
             </div>
           </section>
 
@@ -96,12 +93,12 @@ function Footer() {
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => setIsRefundModalOpen(true)}
-                  className="text-gray-400 hover:text-white text-left"
+                <Link
+                  to="/refund-policy"
+                  className="text-gray-400 hover:text-white"
                 >
                   Refund Policy
-                </button>
+                </Link>
               </li>
             </ul>
           </section>
@@ -111,20 +108,20 @@ function Footer() {
             <h3 className="font-bold mb-4">Contact Support</h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="mailto:support@campusbites.in"
+                <Link
+                  to="mailto:support@campusbites.in"
                   className="text-gray-400 hover:text-white"
                 >
                   support@campusbites.in
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="tel:+917529052525"
+                <Link
+                  to="tel:+917529052525"
                   className="text-gray-400 hover:text-white"
                 >
                   +91 75290 52525
-                </a>
+                </Link>
               </li>
             </ul>
           </section>
@@ -140,12 +137,6 @@ function Footer() {
           <p>© {new Date().getFullYear()} Campus Bites. All rights reserved.</p>
         </div>
       </div>
-
-      {/* Refund Policy Modal */}
-      <RefundPolicyModal
-        onOpen={isRefundModalOpen}
-        onOpenChange={setIsRefundModalOpen}
-      />
     </footer>
   );
 }

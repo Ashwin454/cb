@@ -41,14 +41,15 @@ export const UpdateOrderStatus=async(orderId,status,token)=>{
 
         result=response.data.data;
         toast.success("Order Status Changed");
-
+         toast.dismiss(toastId)
+        return result;
     }
     catch(err){
         console.log(err)
         toast.error(err.response.data.message)
     }
     toast.dismiss(toastId)
-    return result;
+    
 }
 
 export const GetOrderDetails=async(OrderId,token)=>{
@@ -66,12 +67,14 @@ export const GetOrderDetails=async(OrderId,token)=>{
 
         toast.success("Order Details Fetched SuccessFully")
         result=response.data.data;
+         toast.dismiss(toastId);
+        return result;
     }
     catch(err){
         toast.error(err.response.data.message);
     }
     toast.dismiss(toastId);
-    return result;
+    
 }
 
 export const getStudentOrders=async(token)=>{

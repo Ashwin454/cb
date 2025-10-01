@@ -369,8 +369,8 @@ function TestimonialCard({ name, role, content, rating }) {
 
 function ContactCard({ icon, title, content, link }) {
   return (
-    <a
-      href={link}
+    <Link
+      to={link}
       className="bg-white dark:bg-[#1E1E1E] rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-md hover:shadow-xl transition text-center block"
     >
       <div className="text-3xl sm:text-4xl mb-4">{icon}</div>
@@ -380,18 +380,18 @@ function ContactCard({ icon, title, content, link }) {
       <p className="text-sm sm:text-base text-[#666666] dark:text-[#A0A0A0]">
         {content}
       </p>
-    </a>
+    </Link>
   );
 }
 
 function SocialLink({ icon, label, href }) {
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition text-lg"
       aria-label={label}
     >
       {icon}
-    </a>
+    </Link>
   );
 }

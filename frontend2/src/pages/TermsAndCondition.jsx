@@ -1,5 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function TermsConditionsPage({ onClose }) {
   const handleClose = () => {
@@ -155,12 +156,12 @@ export default function TermsConditionsPage({ onClose }) {
               CAMPUS BITES
               <br />
               Email:{" "}
-              <a
-                href="mailto:support@campusbites.in"
+              <Link
+                to="mailto:support@campusbites.in"
                 className="text-blue-400 underline hover:text-blue-300"
               >
                 support@campusbites.in
-              </a>
+              </Link>
               <br />
               Phone: +91 7529052525
             </p>

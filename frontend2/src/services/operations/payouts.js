@@ -15,6 +15,9 @@ export const getBalance=async(token)=>{
       
         toast.success("balance Fetched successFully");
         result=response.data.data
+         toast.dismiss(toastId);
+    
+         return result;
     }
     catch(err){
         
@@ -22,7 +25,7 @@ export const getBalance=async(token)=>{
     }
     toast.dismiss(toastId);
     
-    return result;
+   
 }
 
 export const requestPayout=async(data,token)=>{
@@ -37,12 +40,13 @@ export const requestPayout=async(data,token)=>{
         }
         
         result=response.data.data
+        return result;
     }
      catch(err){
         toast.error(err?.response?.data?.message || "Error Occured")
     }
    
-    return result;
+    
 }
 
 
@@ -58,13 +62,14 @@ export const getPayoutHistory=async(token)=>{
         }
         toast.success("balance Fetched successFully");
         result=response.data.data
+        return result;
     }
     catch(err){
         console.log(err)
         toast.error(err?.response?.data?.message || "Error Occured")
     }
     
-    return result;
+    
 }
 
 export const getPayoutStatus=async(id,token)=>{
@@ -78,10 +83,11 @@ export const getPayoutStatus=async(id,token)=>{
         }
         toast.success("balance Fetched successFully");
         result=response.data.data
+        return result;
     }
     catch(err){
         toast.error(err?.response?.data?.message || "Error Occured")
     }
     
-    return result;
+    
 }

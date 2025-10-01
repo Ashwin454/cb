@@ -56,6 +56,7 @@ import AboutPage from "./pages/AboutUs";
 import FAQPage from "./pages/FAQ";
 import TermsConditionsPage from "./pages/TermsAndCondition";
 import PrivacyPolicyPage from "./pages/PrivacyPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
 import GroupOrderPage from "./pages/GroupOrder";
 
 function App() {
@@ -214,6 +215,7 @@ function App() {
           <Route path="/FAQ" element={<FAQPage />} />
           <Route path="/terms" element={<TermsConditionsPage />} />
           <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
         </Routes>
       </main>
       <Footer />

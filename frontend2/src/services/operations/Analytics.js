@@ -3,7 +3,7 @@ import apiConnector from "../apiConnector";
 import { VendorAnalytics } from "../api";
 
 export const getBasicDashboard = async (canteenId, token) => {
-  let result = null;
+  let result = [];
   try {
     const response = await apiConnector(
       `${VendorAnalytics.Analyticapi}/${canteenId}/basic`,
@@ -25,7 +25,7 @@ export const getBasicDashboard = async (canteenId, token) => {
 };
 
 export const getFinancialOverview = async (canteenId, token) => {
-  let result = null;
+  let result = [];
   try {
     const response = await apiConnector(
       `${VendorAnalytics.Analyticapi}/${canteenId}/finance`,
@@ -47,7 +47,7 @@ export const getFinancialOverview = async (canteenId, token) => {
 };
 
 export const getPerformanceAnalysis = async (canteenId, token) => {
-  let result = null;
+  let result = [];
   try {
     const response = await apiConnector(
       `${VendorAnalytics.Analyticapi}/${canteenId}/orders`,
@@ -69,7 +69,7 @@ export const getPerformanceAnalysis = async (canteenId, token) => {
 };
 
 export const getItemAnalysis = async (canteenId, token) => {
-  let result = null;
+  let result = []
   try {
     const response = await apiConnector(
       `${VendorAnalytics.Analyticapi}/${canteenId}/items`,
@@ -91,7 +91,7 @@ export const getItemAnalysis = async (canteenId, token) => {
 };
 
 export const getOperatingMetrics = async (canteenId, token) => {
-  let result = null;
+  let result = [];
   try {
     const response = await apiConnector(
       `${VendorAnalytics.Analyticapi}/${canteenId}/operating`,

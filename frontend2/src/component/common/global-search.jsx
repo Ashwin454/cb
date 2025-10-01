@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Search, Loader2, Utensils, Store } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Simple Modal Component
 function Modal({ open, onClose, children }) {
@@ -82,7 +83,9 @@ export default function GlobalSearch({ open, onOpenChange }) {
         ) : error ? (
           <div className="text-center text-red-500 py-8">{error}</div>
         ) : query && Object.keys(results).length === 0 ? (
-          <div className="text-center text-gray-400 py-8">No results found.</div>
+          <div className="text-center text-gray-400 py-8">
+            No results found.
+          </div>
         ) : (
           Object.entries(results).map(([type, items]) => (
             <div key={type} className="mb-6">
@@ -97,7 +100,7 @@ export default function GlobalSearch({ open, onOpenChange }) {
               <ul className="space-y-2">
                 {items.map((item) => (
                   <li key={item._id}>
-                    <a
+                    <Link
                       href={getResultLink(item)}
                       className="flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-900 dark:text-white"
                       onClick={() => onOpenChange(false)}
@@ -115,7 +118,7 @@ export default function GlobalSearch({ open, onOpenChange }) {
                           ₹{item.price}
                         </span>
                       )}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

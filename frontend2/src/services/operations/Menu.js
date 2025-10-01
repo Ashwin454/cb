@@ -114,14 +114,14 @@ export const getQuickBites=async(campusId)=>{
     result=response.data.data
     toast.success("Items fetched SuccessFully");
     toast.dismiss(toastId)
-    return result;
+    
   }
   catch(err){
    
     toast.error(err?.response?.data?.message || "error Occurred");
   }
   toast.dismiss(toastId)
-  
+  return result;
 
 }
 

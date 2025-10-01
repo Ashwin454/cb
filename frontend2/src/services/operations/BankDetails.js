@@ -21,11 +21,12 @@ export const getAllBankDetails = async (token, filters = {}) => {
     }
 
     result = response.data;
+    return result;
   } catch (error) {
     console.error("Error fetching bank details:", error);
     toast.error("Failed to fetch bank details");
   }
-  return result;
+  
 };
 
 // Verify bank details (approve/reject)
@@ -54,9 +55,10 @@ export const verifyBankDetails = async (
     toast.success(
       `Bank details ${verified ? "verified" : "rejected"} successfully`
     );
+    return result;
   } catch (error) {
     console.error("Error verifying bank details:", error);
     toast.error("Failed to verify bank details");
   }
-  return result;
+  
 };
