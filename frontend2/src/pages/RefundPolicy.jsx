@@ -139,15 +139,15 @@ const RefundPolicy = () => {
                         <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
                           If an order is cancelled before confirmation, the full
                           amount paid will be refunded to the original payment
-                          method.
+                          method within 7–14 business days.
                         </p>
                       </div>
                       <div className="flex items-start space-x-3 p-3 sm:p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors duration-200">
                         <div className="w-2 h-2 bg-green-400 rounded-full mt-2 sm:mt-3 flex-shrink-0"></div>
                         <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-                          Refunds will be processed within{" "}
+                          Refunds will be Credited within{" "}
                           <span className="font-bold text-green-400 bg-green-900/30 px-1 sm:px-2 py-1 rounded text-xs sm:text-sm">
-                            5–7 business days
+                            7–14 business days
                           </span>
                           , subject to the policies of the respective banks and
                           payment gateways.
