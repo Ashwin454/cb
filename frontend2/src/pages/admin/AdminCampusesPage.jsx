@@ -142,17 +142,12 @@ export default function AdminCampusesPage() {
   async function handleAddCampus() {
     setAddLoading(true);
     try {
-      const res = await apiConnector(
-        AdminApi.submitCampusRequestApi,
-        "POST",
-        addForm,
-        {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        }
-      );
-
-      if (res.data.success && res.data.campus) {
+      const res = await apiConnector(AdminApi.createCampusapi, "POST", addForm, {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      });
+      console.log(res);
+      if (res.data.campus) {
         toast.success("Campus added successfully");
         setCampuses((prev) => [...prev, res.data.campus]);
         setAddDialogOpen(false);

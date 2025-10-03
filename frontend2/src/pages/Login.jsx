@@ -36,6 +36,7 @@ import {
 import { Login } from "../services/operations/Auth";
 import { useDispatch } from "react-redux";
 import { setToken, setUser } from "../slices/authSlice";
+import GoogleSignUp from "../component/core/Auth/GoogleSignup";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -337,56 +338,7 @@ export default function LoginPage() {
                         </span>
                       </div>
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      aria-label="sign in with google"
-                      className="
-                        w-full
-                        bg-gradient-to-r
-                        from-yellow-400
-                        to-blue-500
-                        dark:from-yellow-600
-                        dark:to-blue-800
-                        border-0
-                        hover:from-yellow-500
-                        hover:to-blue-600
-                        dark:hover:from-yellow-700
-                        dark:hover:to-blue-900
-                        text-white
-                        rounded-xl
-                        h-14
-                        text-lg
-                        backdrop-blur-sm
-                        transition-all
-                        shadow-md
-                        duration-500
-                      "
-                      onClick={() =>
-                        (window.location.href =
-                          "https://campusbites-mxpe.onrender.com/api/v1/users/auth/google")
-                      }
-                    >
-                      <svg className="w-6 h-6 mr-3" viewBox="0 0 48 48">
-                        <path
-                          fill="#FFC107"
-                          d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039L38.804 12.04C34.553 7.784 29.577 5 24 5C13.522 5 5 13.522 5 24s8.522 19 19 19s19-8.522 19-19c0-1.332-.136-2.626-.389-3.917z"
-                        />
-                        <path
-                          fill="#FF3D00"
-                          d="M6.306 14.691c-1.321 2.355-2.071 5.12-2.071 8.003s.75 5.648 2.071 8.003l-5.362 4.152C1.528 31.979 0 28.182 0 24s1.528-7.979 4.02-11.832L6.306 14.691z"
-                        />
-                        <path
-                          fill="#4CAF50"
-                          d="M24 44c5.166 0 9.773-1.789 13.04-4.788l-5.362-4.152c-1.921 1.284-4.322 2.04-6.914 2.04c-5.022 0-9.284-3.473-10.825-8.125l-5.378 4.162C8.751 39.528 15.827 44 24 44z"
-                        />
-                        <path
-                          fill="#1976D2"
-                          d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.16-4.082 5.584l5.362 4.152c3.354-3.109 5.419-7.587 5.419-12.735c0-1.332-.136-2.626-.389-3.917z"
-                        />
-                      </svg>
-                      Sign in with Google
-                    </Button>
+                   <GoogleSignUp isLogin={true}/>
                   </>
                 )}
 

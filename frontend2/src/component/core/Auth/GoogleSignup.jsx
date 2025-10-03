@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { Button } from "../../ui/button"; // ✅ adjust path for your project
-import toast from "react-hot-toast"
+import { Button } from "../../ui/button"; 
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser,setToken } from "../../../slices/authSlice";
 
-const GoogleSignUp = ({ form }) => {
-
-  const [user, setUser] = useState(null);
-
+const GoogleSignUp = ({ form, isLogin = false }) => {
+  const [user, setUserSign] = useState(null);
+  const disptach=useDispatch();
   const responseGoogle = async (result) => {
     try {
       console.log("Google result:", result);
       const code = result.code;
 
-      if (code) {
+      if (code && !isLogin) {
         const data = { code };
         console.log(data);
 
@@ -26,23 +27,42 @@ const GoogleSignUp = ({ form }) => {
           throw new Error(response.data.message);
         }
 
-        setUser(response.data.data);
+        setUserSign(response.data.data);
 
         toast.success("Please Fill the Remaining Details");
       }
+      else if(code){
+        const data = { code };
+        console.log(data);
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_BASE_URL}/users/googleLogin`,
+          data
+        );
+
+        if (!response.data.success) {
+          throw new Error(response.data.message);
+        }
+        localStorage.setItem("token", JSON.stringify(response.data.token));
+       localStorage.setItem("User", JSON.stringify(response.data.user1));
+        disptach(setUser(response.data.user1));
+        disptach(setToken(response.data.token))
+
+        toast.success("User LoggedIn");
+      }
     } catch (err) {
       console.log(err);
-      toast.error(err?.response?.data?.message || "error Occured")
+      toast.error(err?.response?.data?.message || "error Occured");
     }
   };
 
   useEffect(() => {
-    if (user) {
-      form((prev)=> ({
+    if (user && !isLogin) {
+      form((prev) => ({
         ...prev,
-        name:user.name,
-        email:user.email
-      }))
+        name: user.name,
+        email: user.email,
+      }));
     }
   }, [user]);
 
@@ -58,7 +78,7 @@ const GoogleSignUp = ({ form }) => {
     <Button
       onClick={() => handleGoogleSignIn()}
       variant="outline"
-      className="w-full bg-gray-50 dark:bg-white/10 border-gray-300 dark:border-white/20 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/20 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+      className=" w-full bg-gradient-to-r from-yellow-400 to-blue-500 dark:from-yellow-600 dark:to-blue-800 border-0 hover:from-yellow-500 hover:to-blue-600 dark:hover:from-yellow-700 dark:hover:to-blue-900 text-white rounded-xl  h-14 text-lg backdrop-blur-sm transition-all shadow-md duration-500"
     >
       <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
         <path
@@ -73,7 +93,6 @@ const GoogleSignUp = ({ form }) => {
           C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
         />
 
-        
         <path
           fill="#4CAF50"
           d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36

@@ -103,6 +103,7 @@ export const AdminApi = {
   adminLoginApi: Baseurl + "/admin/login",
 
   // Campus management
+  createCampusapi:Baseurl+"/campuses/create",
   campusesSummaryApi: Baseurl + "/admin/campuses-summary",
   campusUsersApi: Baseurl + "/admin/campus", // Note: requires /:campusId/users
   campusCanteensApi: Baseurl + "/admin/campus", // Note: requires /:campusId/canteens
