@@ -774,7 +774,7 @@ export default function VendorOnboardingForm() {
                 </p>
               </div>
               <div>
-                <Label htmlFor="gstNumber">GST Number *</Label>
+                <Label htmlFor="gstNumber">GST Number (Optional)</Label>
                 <Input
                   id="gstNumber"
                   placeholder="22ABCDE1234F1Z5"
@@ -791,12 +791,12 @@ export default function VendorOnboardingForm() {
                   }}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  15-character GST number (e.g., 22ABCDE1234F1Z5)
+                  15-character GST number (optional for small businesses)
                 </p>
               </div>
             </div>
             <div>
-              <Label htmlFor="fssaiLicense">FSSAI License (Optional)</Label>
+              <Label htmlFor="fssaiLicense">FSSAI License *</Label>
               <Input
                 id="fssaiLicense"
                 placeholder="12345678901234"
@@ -812,8 +812,8 @@ export default function VendorOnboardingForm() {
                 }}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Enter your 14-digit FSSAI license number (optional for small
-                food businesses)
+                Enter your 14-digit FSSAI license number (required for food
+                businesses)
               </p>
             </div>
           </CardContent>
