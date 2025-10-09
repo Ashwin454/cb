@@ -130,10 +130,13 @@ const MenuItemFilters = memo(
           onChange={handleReadyChange}
           className="rounded-lg border border-gray-200 bg-white shadow-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-100 text-gray-700 mr-2"
         >
-          <option value="all">All Ready Status</option>
-          <option value="ready">Ready Items ({filterCounts.ready})</option>
+          <option value="all">QuickBites Ready Status</option>
+          <option value="ready">
+            {" "}
+            QuickBites Ready Items ({filterCounts.ready})
+          </option>
           <option value="not-ready">
-            Not Ready Items ({filterCounts.notReady})
+            Not QuickBites Ready Items ({filterCounts.notReady})
           </option>
         </select>
 

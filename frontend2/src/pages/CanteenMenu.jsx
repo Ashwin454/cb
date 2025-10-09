@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import {
   Star,
   Clock,
@@ -11,6 +11,8 @@ import {
   Filter,
   X,
   Sliders,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
@@ -25,6 +27,188 @@ import {
   removeFromCart,
 } from "../slices/CartSlice";
 import { useSocket } from "../context/Socket";
+
+// TruncatedText Component for description with expand/collapse functionality
+const TruncatedText = ({ text, maxLines = 2, className = "" }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showToggle, setShowToggle] = useState(false);
+  const [needsTruncation, setNeedsTruncation] = useState(false);
+  const textRef = useRef(null);
+
+  // Callback ref to measure text when element is mounted
+  const measureText = useCallback(
+    (element) => {
+      if (element && text && text.length > 0) {
+        // Check if text is actually overflowing
+        const isOverflowing = element.scrollHeight > element.clientHeight;
+
+        if (isOverflowing) {
+          setNeedsTruncation(true);
+          setShowToggle(true);
+        } else {
+          setNeedsTruncation(false);
+          setShowToggle(false);
+        }
+      }
+    },
+    [text]
+  );
+
+  // Additional effect to check text overflow after render
+  useEffect(() => {
+    if (textRef.current && text && text.length > 0) {
+      const checkOverflow = () => {
+        const element = textRef.current;
+        if (element) {
+          const isOverflowing = element.scrollHeight > element.clientHeight;
+
+          if (isOverflowing) {
+            setNeedsTruncation(true);
+            setShowToggle(true);
+          } else {
+            setNeedsTruncation(false);
+            setShowToggle(false);
+          }
+        }
+      };
+
+      // Check immediately and after a short delay
+      checkOverflow();
+      const timeoutId = setTimeout(checkOverflow, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [text]);
+
+  useEffect(() => {
+    if (text && text.length > 0) {
+      const checkTextHeight = () => {
+        if (textRef.current) {
+          // Create a temporary element to measure text height
+          const tempElement = document.createElement("div");
+          const computedStyle = getComputedStyle(textRef.current);
+
+          tempElement.style.cssText = `
+            position: absolute;
+            visibility: hidden;
+            width: ${textRef.current.offsetWidth}px;
+            font-size: ${computedStyle.fontSize};
+            font-family: ${computedStyle.fontFamily};
+            font-weight: ${computedStyle.fontWeight};
+            line-height: 1.4;
+            word-wrap: break-word;
+            white-space: normal;
+            padding: 0;
+            margin: 0;
+            border: none;
+            box-sizing: border-box;
+          `;
+          tempElement.textContent = text;
+          document.body.appendChild(tempElement);
+
+          const lineHeight = parseFloat(
+            getComputedStyle(tempElement).lineHeight
+          );
+          const maxHeight = lineHeight * maxLines;
+          const actualHeight = tempElement.scrollHeight;
+
+          document.body.removeChild(tempElement);
+
+          // Only show "more" button if text actually exceeds 2 lines
+          const exceedsMaxLines = actualHeight > maxHeight;
+
+          if (exceedsMaxLines) {
+            setNeedsTruncation(true);
+            setShowToggle(true);
+          } else {
+            setNeedsTruncation(false);
+            setShowToggle(false);
+          }
+        }
+      };
+
+      // Use multiple methods to ensure we catch the measurement
+      const timeoutId = setTimeout(checkTextHeight, 50);
+      const timeoutId2 = setTimeout(checkTextHeight, 200);
+
+      return () => {
+        clearTimeout(timeoutId);
+        clearTimeout(timeoutId2);
+      };
+    } else {
+      setNeedsTruncation(false);
+      setShowToggle(false);
+    }
+  }, [text, maxLines]);
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  if (!text || text.trim() === "") {
+    return null;
+  }
+
+  return (
+    <div className={`relative ${className}`}>
+      {isExpanded ? (
+        <div className="transition-all duration-300 ease-in-out">
+          {text}
+          {showToggle && needsTruncation && (
+            <motion.button
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={toggleExpanded}
+              className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-xs font-medium ml-1 transition-all duration-200 group"
+            >
+              <span>Show less</span>
+              <ChevronUp
+                size={12}
+                className="group-hover:scale-110 transition-transform duration-200"
+              />
+            </motion.button>
+          )}
+        </div>
+      ) : (
+        <div className="relative transition-all duration-300 ease-in-out">
+          <div
+            ref={(el) => {
+              textRef.current = el;
+              measureText(el);
+            }}
+            className={`line-clamp-2 ${needsTruncation ? "pr-12" : ""}`}
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: maxLines,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {text}
+          </div>
+          {showToggle && needsTruncation && (
+            <motion.button
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={toggleExpanded}
+              className="absolute bottom-0 right-0 inline-flex items-center gap-1 text-red-400 hover:text-red-300 text-xs font-medium transition-all duration-200 group bg-gray-800 pl-2"
+              style={{
+                background:
+                  "linear-gradient(to left, #1f2937 0%, #1f2937 70%, transparent 100%)",
+              }}
+            >
+              <span>more</span>
+              <ChevronDown
+                size={12}
+                className="group-hover:scale-110 transition-transform duration-200"
+              />
+            </motion.button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const CanteenMenuPage = () => {
   const [canteen, setCanteen] = useState(null);
@@ -397,9 +581,19 @@ const CanteenMenuPage = () => {
                           <span className="mobile-title sm:font-bold sm:text-lg sm:md:text-xl sm:text-white sm:line-clamp-2">
                             {item.name?.toUpperCase()}
                           </span>
-                          <span className="mobile-subtitle sm:text-gray-300 sm:text-sm sm:line-clamp-2">
-                            {(item.category || item.description)?.toUpperCase()}
-                          </span>
+                          <div className="mobile-subtitle sm:text-gray-300 sm:text-sm sm:leading-relaxed">
+                            {item.description ? (
+                              <TruncatedText
+                                text={item.description}
+                                maxLines={2}
+                                className="text-gray-200 font-normal"
+                              />
+                            ) : (
+                              <span className="text-gray-400 font-medium uppercase tracking-wide">
+                                {item.category}
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -533,6 +727,24 @@ const CanteenMenuPage = () => {
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+          word-wrap: break-word;
+          word-break: break-word;
+        }
+
+        /* Enhanced text truncation styles */
+        .truncated-text {
+          position: relative;
+          line-height: 1.4;
+        }
+
+        .truncated-text.expanded {
+          max-height: none !important;
+          overflow: visible !important;
+        }
+
+        .truncated-text.collapsed {
+          max-height: 2.8em;
+          overflow: hidden;
         }
 
         /* Responsive grid adjustments */
@@ -658,13 +870,12 @@ const CanteenMenuPage = () => {
             text-transform: uppercase;
           }
 
-          /* Mobile subtitle styling - 14px, lighter color, capitalized */
+          /* Mobile subtitle styling - 14px, better typography */
           .mobile-subtitle {
             font-size: 14px;
-            color: #b0b0b0;
-            line-height: 1.2;
+            line-height: 1.4;
             margin-bottom: 8px;
-            text-transform: uppercase;
+            display: block;
           }
 
           /* Mobile price styling - Orange, bold, 16px */
@@ -789,10 +1000,9 @@ const CanteenMenuPage = () => {
 
           .mobile-subtitle {
             font-size: 13px;
-            color: #b0b0b0;
-            line-height: 1.2;
+            line-height: 1.4;
             margin-bottom: 8px;
-            text-transform: uppercase;
+            display: block;
           }
 
           .mobile-price {

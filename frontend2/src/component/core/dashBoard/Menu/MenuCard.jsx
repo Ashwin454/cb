@@ -170,7 +170,7 @@ const MenuItemCard = memo(({ item, onEdit, onDelete, onToggleReady }) => {
               }`}
             />
             <span className="text-xs font-medium text-slate-700">
-              {currentItem.isReady ? "Ready to serve" : "Mark when ready"}
+              {currentItem.isReady ? "Ready to serve" : "QuickBites Ready"}
             </span>
           </div>
 
