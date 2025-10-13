@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "../components/ui/button";   // ✅ adjust path
+import { Button } from "../components/ui/button"; // ✅ adjust path
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "../components/ui/card";  // ✅ adjust path
-import { Badge } from "../components/ui/badge";     // ✅ adjust path
+} from "../components/ui/card"; // ✅ adjust path
+import { Badge } from "../components/ui/badge"; // ✅ adjust path
 import { Separator } from "../components/ui/separator"; // ✅ adjust path
 import {
   Star,
@@ -18,8 +18,8 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
-import { getItemReviews } from "../services/reviewService";  // ✅ adjust path
-import { useAuth } from "../context/auth-context";           // ✅ adjust path
+import { getItemReviews } from "../services/reviewService"; // ✅ adjust path
+import { useAuth } from "../context/auth-context"; // ✅ adjust path
 import { toast } from "sonner";
 
 // ✅ No TypeScript interfaces here
@@ -285,7 +285,9 @@ export default function ItemReviewSelector({
                           ) : (
                             <Star className="w-3 h-3 mr-1 fill-current" />
                           )}
-                          {status.hasUserReviewed ? "Reviewed ✓" : "Write Review"}
+                          {status.hasUserReviewed
+                            ? "Reviewed ✓"
+                            : "Write Review"}
                         </Button>
                       </motion.div>
 
@@ -365,7 +367,9 @@ export default function ItemReviewSelector({
                         >
                           <div className="flex items-center gap-2 text-blue-700 dark:text-blue-400 text-xs">
                             <CheckCircle2 className="w-3 h-3 flex-shrink-0" />
-                            <span className="font-medium">Reviews viewed 👀</span>
+                            <span className="font-medium">
+                              Reviews viewed 👀
+                            </span>
                           </div>
                         </motion.div>
                       )}

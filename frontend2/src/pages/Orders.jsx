@@ -335,6 +335,8 @@ function OrdersPageContent() {
   const [showItemSelectorDialog, setShowItemSelectorDialog] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
+  // Store the review data for the thank you dialog
+  const [thankYouReviewData, setThankYouReviewData] = useState(null);
   const dispatch = useDispatch();
   // Load viewed reviews from localStorage on component mount
   useEffect(() => {
@@ -537,6 +539,13 @@ function OrdersPageContent() {
 
       await createReview(reviewData);
 
+      // Store the review data for thank you dialog before clearing
+      setThankYouReviewData({
+        order: selectedOrderForReview,
+        item: selectedItemForReview,
+        itemId: itemId,
+      });
+
       // Reset and close review dialog
       setShowReviewDialog(false);
       setReviewRating(0);
@@ -569,6 +578,8 @@ function OrdersPageContent() {
 
   // View review helper functions
   const handleViewReviews = (order, item) => {
+    setShowViewReviewDialog(true);
+
     setSelectedOrderForReview(order);
     setSelectedItemForViewReview(item);
 
@@ -579,8 +590,6 @@ function OrdersPageContent() {
       if (prev.has(itemId)) return prev;
       return new Set(prev).add(itemId);
     });
-
-    setShowViewReviewDialog(true);
 
     // Delay to ensure recent reviews are fetched
     setTimeout(() => fetchItemReviews(itemId), 500);
@@ -729,8 +738,22 @@ function OrdersPageContent() {
     );
   }
 
+  // Check if any review dialog is open
+  const isAnyReviewDialogOpen =
+    showReviewDialog ||
+    showItemSelectorDialog ||
+    showViewReviewDialog ||
+    showThankYouDialog;
+
+  // Check if any modal is open (including order details)
+  const isAnyModalOpen = isAnyReviewDialogOpen || isDetailModalOpen;
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 relative overflow-hidden">
+    <div
+      className={`min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 relative overflow-hidden transition-all duration-300 ${
+        isAnyModalOpen ? "blur-sm" : ""
+      }`}
+    >
       <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 lg:py-12 relative z-10">
         {orders.length === 0 ? (
           <div className="text-center py-8 sm:py-12 lg:py-16 xl:py-24">
@@ -853,23 +876,23 @@ function OrdersPageContent() {
 
       {/* Review Dialog */}
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 bg-white dark:bg-slate-900 border-0 shadow-2xl">
-          <DialogHeader className="text-center pb-4 sm:pb-6 border-b border-gray-100 dark:border-slate-800">
-            <div className="flex justify-center mb-3 sm:mb-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-xl">
-                <Star className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-current" />
+        <DialogContent className="max-w-[98vw] xs:max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl max-h-[95vh] xs:max-h-[90vh] overflow-y-auto mx-0.5 xs:mx-1 sm:mx-4 bg-white dark:bg-slate-900 border-0 shadow-2xl rounded-lg xs:rounded-xl sm:rounded-2xl">
+          <DialogHeader className="text-center pb-2 xs:pb-3 sm:pb-6 border-b border-gray-100 dark:border-slate-800 px-2 xs:px-3 sm:px-6">
+            <div className="flex justify-center mb-1 xs:mb-2 sm:mb-4">
+              <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-lg xs:rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl">
+                <Star className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white fill-current" />
               </div>
             </div>
-            <DialogTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            <DialogTitle className="text-base xs:text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight">
               Share Your Experience
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed px-2 sm:px-0">
+            <DialogDescription className="text-xs xs:text-sm sm:text-base md:text-base text-gray-600 dark:text-gray-400 leading-relaxed px-0.5 xs:px-1 sm:px-0 mt-1 xs:mt-1 sm:mt-2">
               Tell others about your experience with{" "}
-              <span className="font-semibold text-orange-600 dark:text-orange-400">
+              <span className="font-semibold text-orange-600 dark:text-orange-400 break-words">
                 {selectedItemForReview?.item?.name}
               </span>{" "}
               from{" "}
-              <span className="font-semibold text-blue-600 dark:text-blue-400">
+              <span className="font-semibold text-blue-600 dark:text-blue-400 break-words">
                 {selectedOrderForReview?.canteen?.name}
               </span>
             </DialogDescription>
@@ -877,23 +900,23 @@ function OrdersPageContent() {
 
           <form
             onSubmit={handleSubmitReview}
-            className="space-y-6 sm:space-y-8 pt-4 sm:pt-6"
+            className="space-y-3 xs:space-y-4 sm:space-y-6 md:space-y-8 pt-2 xs:pt-3 sm:pt-4 md:pt-6 px-2 xs:px-3 sm:px-6"
           >
             {/* Rating Section */}
             <div>
-              <label className="block text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
+              <label className="block text-xs xs:text-sm sm:text-base md:text-lg font-semibold mb-1 xs:mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200 text-center sm:text-left">
                 How would you rate this item?
               </label>
-              <div className="flex items-center justify-center space-x-2 sm:space-x-3 p-4 sm:p-6 bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-900/20 dark:via-orange-900/20 dark:to-red-900/20 rounded-2xl border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center justify-center space-x-0.5 xs:space-x-1 sm:space-x-2 md:space-x-3 p-2 xs:p-3 sm:p-4 md:p-6 bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-900/20 dark:via-orange-900/20 dark:to-red-900/20 rounded-lg xs:rounded-xl sm:rounded-2xl border border-yellow-200 dark:border-yellow-800">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
-                    className="cursor-pointer transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-yellow-300 dark:focus:ring-yellow-600 rounded-full p-1 sm:p-2"
+                    className="cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none focus:ring-1 xs:focus:ring-2 sm:focus:ring-4 focus:ring-yellow-300 dark:focus:ring-yellow-600 rounded-full p-0.5 xs:p-1 sm:p-1.5 md:p-2 touch-manipulation"
                     onClick={() => setReviewRating(star)}
                   >
                     <Star
-                      className={`w-8 h-8 sm:w-10 sm:h-10 transition-all duration-300 ${
+                      className={`w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 transition-all duration-300 ${
                         star <= reviewRating
                           ? "fill-yellow-400 text-yellow-400 drop-shadow-lg"
                           : "text-gray-300 dark:text-gray-600 hover:text-yellow-300"
@@ -906,7 +929,7 @@ function OrdersPageContent() {
 
             {/* Comment Section */}
             <div>
-              <label className="block text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-800 dark:text-gray-200">
+              <label className="block text-xs xs:text-sm sm:text-base md:text-lg font-semibold mb-1 xs:mb-2 sm:mb-3 md:mb-4 text-gray-800 dark:text-gray-200 text-center sm:text-left">
                 Share your thoughts
               </label>
               <div className="relative">
@@ -914,40 +937,47 @@ function OrdersPageContent() {
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
                   placeholder="What did you love about this item? Was it delicious? Fresh? Would you recommend it to others?"
-                  rows={4}
+                  rows={3}
+                  maxLength={500}
                   required
-                  className="resize-none border-2 border-gray-200 dark:border-slate-700 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base leading-relaxed focus:border-orange-400 dark:focus:border-orange-500 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/30 transition-all duration-300 bg-white dark:bg-slate-800"
+                  className="resize-none border-2 border-gray-200 dark:border-slate-700 rounded-lg xs:rounded-xl sm:rounded-xl px-2 xs:px-3 sm:px-4 py-2 xs:py-2.5 sm:py-3 text-xs xs:text-sm sm:text-base leading-relaxed focus:border-orange-400 dark:focus:border-orange-500 focus:ring-1 xs:focus:ring-2 sm:focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/30 transition-all duration-300 bg-white dark:bg-slate-800 w-full min-h-[70px] xs:min-h-[80px] sm:min-h-[100px]"
                 />
-                <div className="absolute bottom-2 sm:bottom-3 right-2 sm:right-3 text-xs text-gray-400 dark:text-gray-500">
+                <div className="absolute bottom-1 xs:bottom-2 sm:bottom-3 right-1 xs:right-2 sm:right-3 text-xs text-gray-400 dark:text-gray-500 bg-white dark:bg-slate-800 px-1 rounded">
                   {reviewComment.length}/500
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end pt-4 sm:pt-6 border-t border-gray-100 dark:border-slate-800">
+            <div className="flex flex-col xs:flex-row gap-1.5 xs:gap-2 sm:gap-3 md:gap-4 justify-end pt-2 xs:pt-3 sm:pt-4 md:pt-6 border-t border-gray-100 dark:border-slate-800">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowReviewDialog(false)}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 text-sm sm:text-base"
+                className="w-full xs:w-auto px-3 xs:px-4 sm:px-6 py-2.5 xs:py-3 sm:py-2.5 md:py-3 border-2 border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-all duration-300 text-xs xs:text-sm sm:text-base font-medium touch-manipulation"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={reviewSubmitting || reviewRating === 0}
-                className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                className="w-full xs:w-auto px-4 xs:px-6 sm:px-8 py-2.5 xs:py-3 sm:py-2.5 md:py-3 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-xs xs:text-sm sm:text-base touch-manipulation"
               >
                 {reviewSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 animate-spin" />
-                    Saving...
+                    <Loader2 className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 mr-1 xs:mr-2 animate-spin" />
+                    <span className="hidden xs:inline sm:inline">
+                      Saving...
+                    </span>
+                    <span className="xs:hidden sm:hidden">Saving</span>
                   </>
                 ) : (
                   <>
-                    <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    Save Review
+                    <Heart className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 mr-1 xs:mr-2" />
+                    <span className="hidden xs:inline sm:inline">
+                      Save Review
+                    </span>
+                    <span className="xs:hidden sm:hidden">Save</span>
                   </>
                 )}
               </Button>
@@ -961,23 +991,23 @@ function OrdersPageContent() {
         open={showItemSelectorDialog}
         onOpenChange={setShowItemSelectorDialog}
       >
-        <DialogContent className="max-w-2xl sm:max-w-3xl md:max-w-4xl max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 bg-white dark:bg-slate-900 border-0 shadow-2xl">
-          <DialogHeader className="text-center pb-4 sm:pb-6 border-b border-gray-100 dark:border-slate-800">
-            <div className="flex justify-center mb-3 sm:mb-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-xl">
-                <Star className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-current" />
+        <DialogContent className="max-w-[98vw] xs:max-w-[95vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[95vh] xs:max-h-[90vh] overflow-y-auto mx-0.5 xs:mx-1 sm:mx-4 bg-white dark:bg-slate-900 border-0 shadow-2xl rounded-lg xs:rounded-xl sm:rounded-2xl">
+          <DialogHeader className="text-center pb-2 xs:pb-3 sm:pb-6 border-b border-gray-100 dark:border-slate-800 px-2 xs:px-3 sm:px-6">
+            <div className="flex justify-center mb-1 xs:mb-2 sm:mb-4">
+              <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-lg xs:rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl">
+                <Star className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white fill-current" />
               </div>
             </div>
-            <DialogTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            <DialogTitle className="text-base xs:text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight">
               Review Your Order
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed px-2 sm:px-0">
+            <DialogDescription className="text-xs xs:text-sm sm:text-base md:text-base text-gray-600 dark:text-gray-400 leading-relaxed px-0.5 xs:px-1 sm:px-0 mt-1 xs:mt-1 sm:mt-2">
               Select items from your order to review and help fellow students
               make great food choices!
             </DialogDescription>
           </DialogHeader>
 
-          <div className="p-4 sm:p-6">
+          <div className="p-2 xs:p-3 sm:p-4 md:p-6">
             {selectedOrderForSelector && (
               <ItemReviewSelector
                 order={selectedOrderForSelector}
@@ -995,44 +1025,44 @@ function OrdersPageContent() {
         open={showViewReviewDialog}
         onOpenChange={setShowViewReviewDialog}
       >
-        <DialogContent className="max-w-2xl sm:max-w-3xl md:max-w-4xl max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 bg-white dark:bg-slate-900 border-0 shadow-2xl">
-          <DialogHeader className="text-center pb-4 sm:pb-6 border-b border-gray-100 dark:border-slate-800">
-            <div className="flex justify-center mb-3 sm:mb-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-xl">
-                <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-white fill-current" />
+        <DialogContent className="max-w-[98vw] xs:max-w-[95vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl max-h-[95vh] xs:max-h-[90vh] overflow-y-auto mx-0.5 xs:mx-1 sm:mx-4 bg-white dark:bg-slate-900 border-0 shadow-2xl rounded-lg xs:rounded-xl sm:rounded-2xl">
+          <DialogHeader className="text-center pb-2 xs:pb-3 sm:pb-6 border-b border-gray-100 dark:border-slate-800 px-2 xs:px-3 sm:px-6">
+            <div className="flex justify-center mb-1 xs:mb-2 sm:mb-4">
+              <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-500 rounded-lg xs:rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl">
+                <MessageSquare className="w-5 h-5 xs:w-6 xs:h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white fill-current" />
               </div>
             </div>
-            <DialogTitle className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            <DialogTitle className="text-base xs:text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight">
               Customer Reviews
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed px-2 sm:px-0">
+            <DialogDescription className="text-xs xs:text-sm sm:text-base md:text-base text-gray-600 dark:text-gray-400 leading-relaxed px-0.5 xs:px-1 sm:px-0 mt-1 xs:mt-1 sm:mt-2">
               See what other students think about{" "}
-              <span className="font-semibold text-orange-600 dark:text-orange-400">
+              <span className="font-semibold text-orange-600 dark:text-orange-400 break-words">
                 {selectedItemForViewReview?.item?.name ||
                   selectedItemForViewReview?.nameAtPurchase}
               </span>
             </DialogDescription>
           </DialogHeader>
 
-          <div className="p-4 sm:p-6">
+          <div className="p-2 xs:p-3 sm:p-4 md:p-6">
             {reviewsLoading ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-8 sm:py-12">
                 <div className="text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-blue-500 mx-auto mb-3 sm:mb-4" />
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                     Loading reviews...
                   </p>
                 </div>
               </div>
             ) : existingReviews.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare className="w-8 h-8 text-gray-400" />
+              <div className="text-center py-8 sm:py-12">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 dark:bg-slate-800 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   No reviews yet
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 px-2">
                   Be the first to share your experience with this item!
                 </p>
                 <Button
@@ -1045,25 +1075,26 @@ function OrdersPageContent() {
                       );
                     }
                   }}
-                  className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white"
+                  className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base touch-manipulation"
                 >
                   <Star className="w-4 h-4 mr-2 fill-current" />
-                  Write First Review
+                  <span className="hidden sm:inline">Write First Review</span>
+                  <span className="sm:hidden">Write Review</span>
                 </Button>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white text-center sm:text-left">
                     {existingReviews.length} Review
                     {existingReviews.length !== 1 ? "s" : ""}
                   </h3>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center sm:justify-end gap-2">
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                           key={star}
-                          className={`w-4 h-4 ${
+                          className={`w-3 h-3 sm:w-4 sm:h-4 ${
                             star <=
                             Math.round(
                               existingReviews.reduce(
@@ -1077,7 +1108,7 @@ function OrdersPageContent() {
                         />
                       ))}
                     </div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
                       {(
                         existingReviews.reduce(
                           (sum, review) => sum + review.rating,
@@ -1088,21 +1119,21 @@ function OrdersPageContent() {
                   </div>
                 </div>
 
-                <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div className="space-y-3 sm:space-y-4 max-h-80 sm:max-h-96 overflow-y-auto">
                   {existingReviews.map((review) => (
                     <div
                       key={review._id}
-                      className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-600"
+                      className="bg-gradient-to-r from-gray-50 to-white dark:from-slate-700 dark:to-slate-800 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-slate-600"
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-sm font-semibold">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-white text-xs sm:text-sm font-semibold">
                               {review.student?.name?.charAt(0) || "U"}
                             </span>
                           </div>
-                          <div>
-                            <p className="font-semibold text-gray-900 dark:text-white text-sm">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm truncate">
                               {review.student?.name || "Anonymous"}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -1110,27 +1141,29 @@ function OrdersPageContent() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`w-4 h-4 ${
-                                star <= review.rating
-                                  ? "text-yellow-400 fill-current"
-                                  : "text-gray-300 dark:text-gray-600"
-                              }`}
-                            />
-                          ))}
+                        <div className="flex justify-center sm:justify-end">
+                          <div className="flex">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                                  star <= review.rating
+                                    ? "text-yellow-400 fill-current"
+                                    : "text-gray-300 dark:text-gray-600"
+                                }`}
+                              />
+                            ))}
+                          </div>
                         </div>
                       </div>
-                      <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+                      <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-relaxed break-words">
                         {review.comment}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex justify-center pt-4 border-t border-gray-100 dark:border-slate-800">
+                <div className="flex justify-center pt-3 sm:pt-4 border-t border-gray-100 dark:border-slate-800">
                   <Button
                     onClick={() => {
                       setShowViewReviewDialog(false);
@@ -1142,10 +1175,11 @@ function OrdersPageContent() {
                       }
                     }}
                     variant="outline"
-                    className="border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-700 dark:text-orange-400 dark:hover:bg-orange-950/30"
+                    className="border-orange-200 text-orange-600 hover:bg-orange-50 dark:border-orange-700 dark:text-orange-400 dark:hover:bg-orange-950/30 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base touch-manipulation"
                   >
                     <Star className="w-4 h-4 mr-2" />
-                    Add Your Review
+                    <span className="hidden sm:inline">Add Your Review</span>
+                    <span className="sm:hidden">Add Review</span>
                   </Button>
                 </div>
               </div>
@@ -1156,25 +1190,25 @@ function OrdersPageContent() {
 
       {/* Thank You Dialog */}
       <Dialog open={showThankYouDialog} onOpenChange={setShowThankYouDialog}>
-        <DialogContent className="max-w-sm sm:max-w-md text-center mx-2 sm:mx-4">
-          <DialogHeader>
-            <div className="flex justify-center mb-4 sm:mb-6">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center shadow-2xl">
-                <Heart className="w-10 h-10 sm:w-12 sm:h-12 text-white fill-current" />
+        <DialogContent className="max-w-[95vw] xs:max-w-[90vw] sm:max-w-md md:max-w-lg text-center mx-1 xs:mx-2 sm:mx-4 rounded-lg xs:rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border-0 shadow-2xl">
+          <DialogHeader className="px-2 xs:px-3 sm:px-6">
+            <div className="flex justify-center mb-2 xs:mb-3 sm:mb-4 md:mb-6">
+              <div className="w-12 h-12 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg xs:rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl">
+                <Heart className="w-6 h-6 xs:w-8 xs:h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white fill-current" />
               </div>
             </div>
-            <DialogTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
+            <DialogTitle className="text-base xs:text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-1 xs:mb-2 sm:mb-3 md:mb-4 leading-tight">
               Thank You! 🎉
             </DialogTitle>
-            <DialogDescription className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed mb-6 sm:mb-8 px-2 sm:px-0">
+            <DialogDescription className="text-gray-600 dark:text-gray-300 text-xs xs:text-sm sm:text-base md:text-base leading-relaxed mb-3 xs:mb-4 sm:mb-6 md:mb-8 px-0.5 xs:px-1 sm:px-2 md:px-0">
               Your review has been saved successfully! Your feedback helps us
               improve our service and makes other students happy! ✨
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 sm:space-y-6">
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-3 sm:p-4 rounded-xl border border-orange-200 dark:border-orange-800">
-              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+          <div className="space-y-2 xs:space-y-3 sm:space-y-4 md:space-y-6 px-2 xs:px-3 sm:px-6 pb-2 xs:pb-3 sm:pb-6">
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-2 xs:p-2.5 sm:p-3 md:p-4 rounded-lg xs:rounded-lg sm:rounded-xl border border-orange-200 dark:border-orange-800">
+              <p className="text-xs xs:text-sm sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                 <strong>🌟 Your voice matters!</strong> Thanks for helping
                 fellow students make great food choices.
               </p>
@@ -1183,26 +1217,32 @@ function OrdersPageContent() {
             <Button
               onClick={() => {
                 setShowThankYouDialog(false);
-                if (selectedItemForReview && selectedOrderForReview) {
+                if (thankYouReviewData) {
                   handleViewReviews(
-                    selectedOrderForReview,
-                    selectedItemForReview
+                    thankYouReviewData.order,
+                    thankYouReviewData.item
                   );
+                  setThankYouReviewData(null);
                 }
               }}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 py-2.5 sm:py-3 mb-2 sm:mb-3 text-sm sm:text-base"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 py-2.5 xs:py-3 sm:py-2.5 md:py-3 mb-1 xs:mb-2 sm:mb-3 text-xs xs:text-sm sm:text-base touch-manipulation"
             >
-              <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              View My Review
+              <MessageSquare className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 mr-1 xs:mr-2" />
+              <span className="hidden xs:inline sm:inline">View My Review</span>
+              <span className="xs:hidden sm:hidden">View Review</span>
             </Button>
             <Button
               onClick={() => {
                 setShowThankYouDialog(false);
+                setThankYouReviewData(null);
               }}
               variant="outline"
-              className="w-full border-2 border-orange-200 dark:border-orange-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/50 shadow-lg hover:shadow-xl transition-all duration-300 py-2.5 sm:py-3 text-sm sm:text-base"
+              className="w-full border-2 border-orange-200 dark:border-orange-800 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-950/50 shadow-lg hover:shadow-xl transition-all duration-300 py-2.5 xs:py-3 sm:py-2.5 md:py-3 text-xs xs:text-sm sm:text-base touch-manipulation"
             >
-              Continue Exploring
+              <span className="hidden xs:inline sm:inline">
+                Continue Exploring
+              </span>
+              <span className="xs:hidden sm:hidden">Continue</span>
             </Button>
           </div>
         </DialogContent>
@@ -1210,50 +1250,50 @@ function OrdersPageContent() {
 
       {/* Order Details Dialog */}
       <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 mx-2 sm:mx-4 p-0">
+        <DialogContent className="max-w-[98vw] xs:max-w-[95vw] sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl max-h-[95vh] xs:max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 mx-0.5 xs:mx-1 sm:mx-2 md:mx-4 p-0 rounded-lg xs:rounded-xl sm:rounded-2xl">
           {orderDetailLoading ? (
             <>
-              <DialogHeader>
-                <DialogTitle className="text-lg sm:text-xl">
+              <DialogHeader className="px-2 xs:px-3 sm:px-4 md:px-6">
+                <DialogTitle className="text-base xs:text-lg sm:text-xl">
                   Loading Order Details...
                 </DialogTitle>
               </DialogHeader>
-              <div className="flex items-center justify-center py-12 sm:py-20">
-                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-orange-500" />
+              <div className="flex items-center justify-center py-8 xs:py-12 sm:py-20">
+                <Loader2 className="h-5 w-5 xs:h-6 xs:w-6 sm:h-8 sm:w-8 animate-spin text-orange-500" />
               </div>
             </>
           ) : selectedOrder ? (
             <>
-              <DialogHeader className="border-b pb-3 sm:pb-4 md:pb-6 dark:border-slate-700 p-3 sm:p-4 md:p-6">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 md:gap-4">
+              <DialogHeader className="border-b pb-2 xs:pb-3 sm:pb-4 md:pb-6 dark:border-slate-700 p-2 xs:p-3 sm:p-4 md:p-6">
+                <div className="flex flex-col xs:flex-col sm:flex-row sm:items-center gap-1.5 xs:gap-2 sm:gap-3 md:gap-4">
                   <div
-                    className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 ${
+                    className={`w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 ${
                       getStatusConfig(selectedOrder.status).color
-                    } rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg mx-auto sm:mx-0`}
+                    } rounded-lg xs:rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg mx-auto xs:mx-auto sm:mx-0`}
                   >
                     {(() => {
                       const StatusIcon = getStatusConfig(
                         selectedOrder.status
                       ).icon;
                       return (
-                        <StatusIcon className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
+                        <StatusIcon className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
                       );
                     })()}
                   </div>
-                  <div className="text-center sm:text-left flex-1">
-                    <DialogTitle className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-center xs:text-center sm:text-left flex-1">
+                    <DialogTitle className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
                       Order #{selectedOrder?.OrderNumber?.replace("order#", "")}
                     </DialogTitle>
-                    <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-xs xs:text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mt-0.5 xs:mt-1">
                       {formatDate(selectedOrder.createdAt)}
                     </p>
-                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                    <div className="flex items-center justify-center xs:justify-center sm:justify-start gap-1.5 xs:gap-2 mt-1 xs:mt-2">
                       <Badge
                         className={`${
                           getStatusConfig(selectedOrder.status).bgColor
                         } ${
                           getStatusConfig(selectedOrder.status).textColor
-                        } border-0 px-2 sm:px-3 py-1 font-semibold text-xs sm:text-sm`}
+                        } border-0 px-1.5 xs:px-2 sm:px-3 py-0.5 xs:py-1 font-semibold text-xs xs:text-xs sm:text-sm`}
                       >
                         {getStatusConfig(selectedOrder.status).label}
                       </Badge>
@@ -1261,17 +1301,19 @@ function OrdersPageContent() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="p-3 sm:p-4 md:p-6">
+              <div className="p-2 xs:p-3 sm:p-4 md:p-6">
                 <OrderDetailsContent order={selectedOrder} />
               </div>
             </>
           ) : (
             <>
-              <DialogHeader>
-                <DialogTitle>Order Details</DialogTitle>
+              <DialogHeader className="px-2 xs:px-3 sm:px-4 md:px-6">
+                <DialogTitle className="text-base xs:text-lg sm:text-xl">
+                  Order Details
+                </DialogTitle>
               </DialogHeader>
-              <div className="flex items-center justify-center py-12 sm:py-20">
-                <p className="text-gray-500 dark:text-gray-400">
+              <div className="flex items-center justify-center py-8 xs:py-12 sm:py-20">
+                <p className="text-gray-500 dark:text-gray-400 text-sm xs:text-base">
                   No order selected
                 </p>
               </div>

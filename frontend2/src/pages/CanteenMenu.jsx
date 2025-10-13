@@ -13,6 +13,8 @@ import {
   Sliders,
   ChevronDown,
   ChevronUp,
+  Search,
+  Tag,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
@@ -221,6 +223,9 @@ const CanteenMenuPage = () => {
     minPrice: 0,
     maxPrice: 1000,
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [availableCategories, setAvailableCategories] = useState([]);
   const { getSocket, connectSocket, disconnectSocket } = useSocket();
   const { token } = useSelector((state) => state.Auth);
   const { canteenId } = useParams();
@@ -240,6 +245,12 @@ const CanteenMenuPage = () => {
         const maxPrice = Math.max(...prices);
         setPriceRange({ min: minPrice, max: maxPrice });
         setActiveFilters({ minPrice, maxPrice });
+
+        // Extract unique categories
+        const categories = [
+          ...new Set(result.map((item) => item.category).filter(Boolean)),
+        ];
+        setAvailableCategories(categories);
       }
 
       setFilteredItems(result);
@@ -268,15 +279,32 @@ const CanteenMenuPage = () => {
     fetchData();
   }, [canteenId, token]);
 
-  // Filter items based on price range
+  // Filter items based on price range, search query, and category
   useEffect(() => {
-    const filtered = menuItems.filter(
+    let filtered = menuItems.filter(
       (item) =>
         item.price >= activeFilters.minPrice &&
         item.price <= activeFilters.maxPrice
     );
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.name?.toLowerCase().includes(query) ||
+          item.description?.toLowerCase().includes(query) ||
+          item.category?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply category filter
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
     setFilteredItems(filtered);
-  }, [menuItems, activeFilters]);
+  }, [menuItems, activeFilters, searchQuery, selectedCategory]);
 
   const handlePriceFilterChange = (type, value) => {
     setActiveFilters((prev) => ({
@@ -290,6 +318,8 @@ const CanteenMenuPage = () => {
       minPrice: priceRange.min,
       maxPrice: priceRange.max,
     });
+    setSearchQuery("");
+    setSelectedCategory("all");
   };
 
   const getActiveFilterCount = () => {
@@ -298,6 +328,12 @@ const CanteenMenuPage = () => {
       activeFilters.minPrice !== priceRange.min ||
       activeFilters.maxPrice !== priceRange.max
     ) {
+      count++;
+    }
+    if (searchQuery.trim()) {
+      count++;
+    }
+    if (selectedCategory !== "all") {
       count++;
     }
     return count;
@@ -354,33 +390,78 @@ const CanteenMenuPage = () => {
 
       {/* Menu Items */}
       <div className="container mx-auto px-4 py-8">
-        {/* Filter Section */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-bold text-white">Menu</h2>
-            <span className="text-gray-300">
-              ({filteredItems.length}{" "}
-              {filteredItems.length === 1 ? "item" : "items"})
-            </span>
+        {/* Search and Filter Section */}
+        <div className="mb-6">
+          {/* Search Bar */}
+          <div className="relative mb-4">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search menu items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-xl bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <X className="h-5 w-5 text-gray-400 hover:text-white transition-colors" />
+              </button>
+            )}
           </div>
 
-          {/* Filter Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowFilter(!showFilter)}
-            className="relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group"
-          >
-            <Sliders size={14} className="text-white" />
-            <span className="text-sm font-semibold">Filter</span>
-            {getActiveFilterCount() > 0 && (
-              <span className="bg-white text-red-500 text-xs font-bold px-1.5 py-0.5 rounded-full ml-1">
-                {getActiveFilterCount()}
+          {/* Category Filter */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Tag className="h-5 w-5 text-gray-400" />
+              <span className="text-gray-300 font-medium">Category:</span>
+            </div>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+            >
+              <option value="all">All Categories</option>
+              {availableCategories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Menu Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-bold text-white">Menu</h2>
+              <span className="text-gray-300">
+                ({filteredItems.length}{" "}
+                {filteredItems.length === 1 ? "item" : "items"})
               </span>
-            )}
-            {/* Ripple effect */}
-            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-full"></div>
-          </motion.button>
+            </div>
+
+            {/* Filter Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowFilter(!showFilter)}
+              className="relative flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group"
+            >
+              <Sliders size={14} className="text-white" />
+              <span className="text-sm font-semibold">Price Filter</span>
+              {getActiveFilterCount() > 0 && (
+                <span className="bg-white text-red-500 text-xs font-bold px-1.5 py-0.5 rounded-full ml-1">
+                  {getActiveFilterCount()}
+                </span>
+              )}
+              {/* Ripple effect */}
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-full"></div>
+            </motion.button>
+          </div>
         </div>
 
         {/* Filter Panel */}
@@ -396,7 +477,7 @@ const CanteenMenuPage = () => {
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-white">Filter by Price</h3>
+                  <h3 className="font-semibold text-white">Active Filters</h3>
                   <div className="flex items-center gap-2">
                     {getActiveFilterCount() > 0 && (
                       <motion.button
@@ -405,7 +486,7 @@ const CanteenMenuPage = () => {
                         onClick={resetFilters}
                         className="px-3 py-1.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs font-semibold rounded-full shadow-sm hover:shadow-md transition-all duration-300"
                       >
-                        Reset
+                        Reset All
                       </motion.button>
                     )}
                     <motion.button
@@ -419,6 +500,37 @@ const CanteenMenuPage = () => {
                         className="text-gray-300 group-hover:text-white transition-colors"
                       />
                     </motion.button>
+                  </div>
+                </div>
+
+                {/* Active Filters Summary */}
+                <div className="mb-6 p-4 bg-gray-800 rounded-lg">
+                  <h4 className="text-sm font-medium text-gray-300 mb-2">
+                    Current Filters:
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {searchQuery && (
+                      <span className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full">
+                        Search: "{searchQuery}"
+                      </span>
+                    )}
+                    {selectedCategory !== "all" && (
+                      <span className="px-3 py-1 bg-green-600 text-white text-xs rounded-full">
+                        Category: {selectedCategory}
+                      </span>
+                    )}
+                    {(activeFilters.minPrice !== priceRange.min ||
+                      activeFilters.maxPrice !== priceRange.max) && (
+                      <span className="px-3 py-1 bg-orange-600 text-white text-xs rounded-full">
+                        Price: ₹{activeFilters.minPrice} - ₹
+                        {activeFilters.maxPrice}
+                      </span>
+                    )}
+                    {getActiveFilterCount() === 0 && (
+                      <span className="px-3 py-1 bg-gray-600 text-white text-xs rounded-full">
+                        No filters applied
+                      </span>
+                    )}
                   </div>
                 </div>
 

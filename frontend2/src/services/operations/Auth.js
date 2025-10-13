@@ -108,7 +108,6 @@ export const RegisterUser=(data)=>{
 
 export const getUserProfileDetails = (token, navigate) => {
   return async (dispatch) => {
-    const toastId = toast.loading('Fetching User Data...');
     try {
       const response = await apiConnector(
         AuthApi.getProfileDetails,
@@ -132,17 +131,14 @@ export const getUserProfileDetails = (token, navigate) => {
           JSON.stringify(response.data.user.canteenId._id)
         );
       }
-      toast.success('User Profile Fetched Successfully');
       // localStorage.setItem requires a key + value
       localStorage.setItem('Profile', JSON.stringify(response.data.user));
-
       dispatch(setProfile(response.data.user));
     } catch (err) {
-     
       toast.error(err?.response?.data?.message || 'Failed to fetch profile');
       LogOutUser(dispatch, navigate);
     }
-    toast.dismiss(toastId);
+  
   };
 };
 

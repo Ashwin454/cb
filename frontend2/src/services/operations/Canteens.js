@@ -26,11 +26,10 @@ export const GetAllCanteens=async(data)=>{
 
 
 export const getCanteenDetails=async(canteenId)=>{
-    console.log(canteenId)
     let result=null;
     try{
         const response=await apiConnector(`${CanteenApi.getCanteenDetail}/${canteenId}`,"GET");
-        console.log(response)
+
         if(!response.data.success){
             throw new Error(response.data.message);
         }

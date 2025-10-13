@@ -67,14 +67,12 @@ function App() {
   usePushSubscription(User?._id);
   useEffect(() => {
     if (token) {
-      if (!Profile) {
-        dispatch(getUserProfileDetails(token, navigate));
-      }
+      dispatch(getUserProfileDetails(token, navigate));
     }
-  }, [token, Profile]);
+  }, [token]);
 
   return (
-    <div className="flex flex-col min-h-screen theme-transition">
+    <div className="flex flex-col min-h-screen">
       {User?.role === Roles.Admin ? <AdminNavbar /> : <Navbar />}
 
       <main className="flex justify-center  mt-17 ">

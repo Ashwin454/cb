@@ -145,3 +145,8 @@ export const ReviewApi = {
   getCanteenAverageRating: Baseurl + "/reviews/canteen-average-rating",
   deleteReview: Baseurl + "/reviews/delete",
 };
+
+export const SearchApi={
+  searchAll:Baseurl+`/search`
+
+}

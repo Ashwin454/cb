@@ -84,7 +84,7 @@ export const PayoutsTab = () => {
       getBalance(token),
       getPayoutHistory(token),
     ]);
-   
+      console.log(balanceData);
       if (balanceData && balanceData.balance) {
         setPayoutBalance({
           ...balanceData,

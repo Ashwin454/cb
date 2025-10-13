@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Search, Loader2 } from "lucide-react";
-import { api } from "../../lib/api";
+import apiConnector from "../../services/apiConnector";
+import { SearchApi } from "../../services/api";
+import { useSelector } from "react-redux";
 
 export default function GlobalSearchDropdown({
   query,
@@ -10,6 +12,7 @@ export default function GlobalSearchDropdown({
   onSearch,
   navigate,
 }) {
+  const {token}=useSelector((state)=>state.Auth);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState({});
   const [error, setError] = useState("");
@@ -27,14 +30,12 @@ export default function GlobalSearchDropdown({
     setLoading(true);
     const handler = setTimeout(async () => {
       try {
-        const res = await api.get(
-          `/api/v1/search?q=${encodeURIComponent(query)}`
-        );
+        const res = await apiConnector(SearchApi.searchAll+`?q=${encodeURIComponent(query)}`,"GET",null,{Authorization:`Bearer ${token}`});
         setResults(res.data.results || {});
         setError("");
         setOpen(true);
       } catch (error) {
-        console.error("Search error:", error);
+       
         setError("Something went wrong.");
         setOpen(true);
       } finally {
@@ -61,18 +62,14 @@ export default function GlobalSearchDropdown({
   }, [open, setOpen]);
 
   const handleNavigation = (url) => {
-    if (navigate) {
-      navigate(url);
-    } else {
-      // Fallback to window.location if navigate is not provided
-      window.location.href = url;
-    }
+    navigate(url);
   };
 
   const getResultLink = (item) => {
+  
     if (item.type === "item" || item.type === "dish")
-      return `/menu/${item._id}`;
-    if (item.type === "canteen") return `/menu/${item._id}`;
+      return `/canteen/${item.canteen}`;
+    if (item.type === "canteen") return `/canteen/${item._id}`;
     return "#";
   };
 
